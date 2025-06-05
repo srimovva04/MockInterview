@@ -4,14 +4,20 @@ import ActionCard from './ActionCard';
 import InterviewTable from './InterviewTable';
 import OnboardingBanner from './OnboardingBanner';
 import JobReadinessAssessmentForm from './JobReadinessAssessmentForm';
+import { MockInterviewForm } from './MockInterviewForm';
 
 const MockInterviewDashboard = () => {
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
+  const [showMockInterviewForm, setMockInterviewForm] = useState(false);
+
 
   const handleCardClick = (cardType) => {
     if (cardType === 'Job Readiness Assessment') {
       setShowAssessmentForm(true);
-    } else {
+    } else if(cardType=='Mock Interview') {
+      setMockInterviewForm(true);
+    }
+    else {
       console.log(`Clicked on ${cardType}`);
     }
   };
@@ -50,6 +56,8 @@ const MockInterviewDashboard = () => {
         <InterviewTable />
       </div>
       <JobReadinessAssessmentForm open={showAssessmentForm} onClose={() => setShowAssessmentForm(false)} />
+      <MockInterviewForm open={showMockInterviewForm} onClose={() => setMockInterviewForm(false)} />
+
     </div>
   );
 };

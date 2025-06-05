@@ -1,8 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import Index from './pages/Index'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App';
+import { BrowserRouter } from 'react-router-dom';
 
 createRoot(document.getElementById('root')).render(
-  <Index/>
-)
+  <StrictMode>
+    <BrowserRouter>
+      <App /> {/* Only App, which contains all Routes */}
+    </BrowserRouter>
+  </StrictMode>
+);

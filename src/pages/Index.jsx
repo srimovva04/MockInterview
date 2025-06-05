@@ -10,7 +10,7 @@ const Index = () => {
     background: 'radial-gradient(circle at center, #1e3a8a 0%, #111827 60%, #0f172a 100%)'
   }}>
 
-      <div className="flex h-[calc(100vh-60px)]">
+      <div className="flex h-full">
         <Sidebar />
         <MockInterviewDashboard />
       </div>
