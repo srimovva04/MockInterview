@@ -1,0 +1,277 @@
+import React, { useState, useEffect } from "react";
+const handleFileUpload = async () => {
+  if (!resumeFile) {
+    alert("Please select a file before uploading.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("resume", resumeFile);
+
+  try {
+    const response = await fetch("/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert("File uploaded successfully!");
+      setResumeFile(null); // Clear the file after successful upload
+    } else {
+      alert("Failed to upload file. Please try again.");
+    }
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    alert("An error occurred during file upload. Please try again.");
+  }
+};
+const JobReadinessAssessmentForm = ({ open, onClose }) => {
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({
+    position: "",
+    roleLevel: "",
+    company: "",
+    jobDescription: "",
+    companyDetails: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [resumeFile, setResumeFile] = useState(null);
+
+  useEffect(() => {
+    if (open) {
+      setStep(1);
+      setErrors({});
+      setForm({
+        position: "",
+        roleLevel: "",
+        company: "",
+        jobDescription: "",
+        companyDetails: "",
+      });
+      setResumeFile(null);
+    }
+  }, [open]);
+
+  if (!open) return null;
+
+  const validateStep1 = () => {
+    const newErrors = {};
+    if (!form.position) newErrors.position = "Position is required.";
+    if (!form.roleLevel) newErrors.roleLevel = "Role level is required.";
+    if (!form.company) newErrors.company = "Company name is required.";
+    if (!form.jobDescription)
+      newErrors.jobDescription = "Job description is required.";
+    if (!form.companyDetails)
+      newErrors.companyDetails = "Company details are required.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  if (step === 1) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div
+          className="absolute inset-0 backdrop-blur-sm bg-black/30 transition-opacity"
+          onClick={onClose}
+        />
+        <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] p-6 pointer-events-auto overflow-auto">
+          <button
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+          <h2 className="text-xl font-semibold mb-4">
+            Job Readiness Assessment
+          </h2>
+          <hr className="mb-6" />
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-4 overflow-auto">
+            <span className="block text-xl font-semibold text-gray-900 mb-4">
+              Step 1 of 3: Job Details
+            </span>
+            <label className="block text-base font-medium text-gray-900 mb-2">
+              Position <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1"
+              placeholder="Enter the job title you're targeting, e.g. Senior Software Engineer"
+              value={form.position}
+              onChange={(e) => setForm({ ...form, position: e.target.value })}
+              required
+            />
+            {errors.position && (
+              <p className="text-red-600 text-sm mb-2">{errors.position}</p>
+            )}
+
+            <label className="block text-base font-medium text-gray-900 mb-2">
+              Role level <span className="text-red-500">*</span>
+            </label>
+            <select
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1"
+              value={form.roleLevel}
+              onChange={(e) => setForm({ ...form, roleLevel: e.target.value })}
+              required
+            >
+              <option value="">Select your role level</option>
+              <option value="Entry-Level">Entry-Level</option>
+              <option value="Mid-Level">Mid-Level</option>
+              <option value="Senior-Level">Senior-Level</option>
+              <option value="Lead/Principal-Level">Lead/Principal-Level</option>
+              <option value="Manager-Level">Manager-Level</option>
+              <option value="Executive-Level">Executive-Level</option>
+            </select>
+            {errors.roleLevel && (
+              <p className="text-red-600 text-sm mb-2">{errors.roleLevel}</p>
+            )}
+
+            <label className="block text-base font-medium text-gray-900 mb-2">
+              Company <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1"
+              placeholder="Enter the company name you're interested in"
+              value={form.company}
+              onChange={(e) => setForm({ ...form, company: e.target.value })}
+              required
+            />
+            {errors.company && (
+              <p className="text-red-600 text-sm mb-2">{errors.company}</p>
+            )}
+
+            <label className="block text-base font-medium text-gray-900 mb-2">
+              Job Description <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1"
+              placeholder="Copy and paste the job description here"
+              value={form.jobDescription}
+              onChange={(e) =>
+                setForm({ ...form, jobDescription: e.target.value })
+              }
+              maxLength={3000}
+              required
+            />
+            {errors.jobDescription && (
+              <p className="text-red-600 text-sm mb-2">
+                {errors.jobDescription}
+              </p>
+            )}
+            <div className="text-xs text-gray-500 mb-4">
+              3000 characters left
+            </div>
+
+            <label className="block text-base font-medium text-gray-900 mb-2">
+              Company Details<span className="text-red-500">*</span>
+            </label>
+            <textarea
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-1"
+              placeholder="Copy and paste the company description here"
+              value={form.companyDetails}
+              onChange={(e) =>
+                setForm({ ...form, companyDetails: e.target.value })
+              }
+              maxLength={3000}
+              required
+            />
+            {errors.companyDetails && (
+              <p className="text-red-600 text-sm mb-2">
+                {errors.companyDetails}
+              </p>
+            )}
+            <div className="text-xs text-gray-500 mb-4">
+              3000 characters left
+            </div>
+
+            <div className="flex space-x-3 mt-4">
+              <button
+                className="bg-blue-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                onClick={() => {
+                  if (validateStep1()) {
+                    setStep(2);
+                  }
+                }}
+              >
+                Next
+              </button>
+              <button
+                className="bg-white border border-gray-300 px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 2) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div
+          className="absolute inset-0 backdrop-blur-sm bg-black/30 transition-opacity"
+          onClick={onClose}
+        />
+        <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] p-6 pointer-events-auto overflow-auto">
+          <button
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+          <h2 className="text-xl font-semibold mb-4">
+            Job Readiness Assessment
+          </h2>
+          <hr className="mb-6" />
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-4 overflow-auto">
+            <span className="block text-xl font-semibold text-gray-900 mb-4">
+              Select your Resume
+            </span>
+            <div className="flex items-center space-x-4 mt-6">
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx"
+                onChange={(e) => setResumeFile(e.target.files[0])}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2"
+              />
+              <button
+                className="flex items-center border border-gray-300 rounded-lg px-6 py-2 font-medium text-gray-700 hover:bg-gray-100"
+                onClick={handleFileUpload}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                  />
+                </svg>
+                Upload
+              </button>
+            </div>
+            {resumeFile && (
+              <p className="text-sm text-gray-700 mt-2">
+                Selected file: {resumeFile.name}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export default JobReadinessAssessmentForm;

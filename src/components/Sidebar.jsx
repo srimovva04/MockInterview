@@ -31,7 +31,7 @@ const Sidebar = () => {
 
       {/* Interview Section */}
       <div className="p-4">
-        <h3 className="text-sm font-medium text-gray-500 mb-3">Interview</h3>
+        <h3 className="text-sm font-medium text-white mb-3">Interview</h3>
         <nav className="space-y-1">
           {menuItems.map((item, index) => (
             <button
@@ -39,7 +39,7 @@ const Sidebar = () => {
               className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                 item.active
                   ? 'bg-gray-100 text-gray-900'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  : 'text-white hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
               <item.icon className="w-5 h-5" />
@@ -54,11 +54,11 @@ const Sidebar = () => {
       <div className="mt-auto p-4 space-y-2">
         <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900">
           <User className="w-5 h-5" />
-          <span className="text-sm font-medium">aava chen</span>
+          <span className="text-sm text-white font-medium hover:text-gray-900">aava chen</span>
         </button>
         <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900">
           <BarChart3 className="w-5 h-5" />
-          <span className="text-sm font-medium">Plan Usage & Other</span>
+          <span className="text-sm text-white font-medium hover:text-gray-900">Plan Usage & Other</span>
         </button>
           
         <button className="w-full bg-blue-600 text-white py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
