@@ -5,7 +5,11 @@ import MockInterviewDashboard from '../components/MockInterviewDashboard';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen"
+    style={{
+    background: 'radial-gradient(circle at center, #1e3a8a 0%, #111827 60%, #0f172a 100%)'
+  }}>
+
       <div className="flex h-[calc(100vh-60px)]">
         <Sidebar />
         <MockInterviewDashboard />

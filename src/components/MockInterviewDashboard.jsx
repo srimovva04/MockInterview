@@ -11,21 +11,21 @@ const MockInterviewDashboard = () => {
   };
 
   return (
-    <div className="flex-1 bg-gray-50 overflow-auto">
+    <div className="flex-1 overflow-auto">
+
+
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Mock Interview</h1>
-          <p className="text-gray-600 text-lg leading-relaxed max-w-4xl">
-            Elevate your interview skills with AI Mock Interview that offers realistic practice sessions, 
-            instant feedback, and job-specific questions to transform your weaknesses into strengths. 
-            Practice anytime, anywhere—no scheduling or stress required—and walk into your real interview 
-            fully prepared and confident.
-          </p>
+          <h1 className="text-3xl font-bold text-white mb-2">Mock Interview</h1>
+          <p className="text-white/80 text-lg leading-relaxed max-w-4xl">
+            Sharpen your interview skills with AI Mock Interview—your personal, on-demand interview coach. 
+  Get realistic practice sessions, instant feedback, and tailored questions based on your target role. 
+  Practice anytime, anywhere—no scheduling, no pressure. Walk into your next interview confident, prepared, and ready to impress.
+</p>
+
         </div>
 
-        {/* Onboarding Banner */}
-        <OnboardingBanner />
 
         {/* Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -37,7 +37,6 @@ const MockInterviewDashboard = () => {
           <ActionCard
             icon={Target}
             title="Start Mock Interview"
-            badge="Beta"
             onClick={() => handleCardClick('Mock Interview')}
           />
           <ActionCard
