@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { FileText, Target, HelpCircle } from 'lucide-react';
-import ActionCard from './ActionCard';
-import InterviewTable from './InterviewTable';
-import OnboardingBanner from './OnboardingBanner';
-import JobReadinessAssessmentForm from './JobReadinessAssessmentForm';
-import { MockInterviewForm } from './MockInterviewForm';
+import React, { useState } from "react";
+import { FileText, Target, HelpCircle } from "lucide-react";
+import ActionCard from "./ActionCard";
+import InterviewTable from "./InterviewTable";
+import { useNavigate } from "react-router-dom";
+import OnboardingBanner from "./OnboardingBanner";
+import JobReadinessAssessmentForm from "./JobReadinessAssessmentForm";
+import { MockInterviewForm } from "./MockInterviewForm";
 
 const MockInterviewDashboard = () => {
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
   const [showMockInterviewForm, setMockInterviewForm] = useState(false);
-
+  const navigate = useNavigate();
 
   const handleCardClick = (cardType) => {
-    if (cardType === 'Job Readiness Assessment') {
+    if (cardType === "Job Readiness Assessment") {
       setShowAssessmentForm(true);
-    } else if(cardType=='Mock Interview') {
+    } else if (cardType == "Mock Interview") {
       setMockInterviewForm(true);
-    }
-    else {
+    } else if (cardType === "Practicing Questions") {
+      navigate("/practicing-questions");
+    } else {
       console.log(`Clicked on ${cardType}`);
     }
   };
@@ -29,9 +31,11 @@ const MockInterviewDashboard = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Mock Interview</h1>
           <p className="text-white/80 text-lg leading-relaxed max-w-4xl">
-            Sharpen your interview skills with AI Mock Interview—your personal, on-demand interview coach. 
-            Get realistic practice sessions, instant feedback, and tailored questions based on your target role. 
-            Practice anytime, anywhere—no scheduling, no pressure. Walk into your next interview confident, prepared, and ready to impress.
+            Sharpen your interview skills with AI Mock Interview—your personal,
+            on-demand interview coach. Get realistic practice sessions, instant
+            feedback, and tailored questions based on your target role. Practice
+            anytime, anywhere—no scheduling, no pressure. Walk into your next
+            interview confident, prepared, and ready to impress.
           </p>
         </div>
         {/* Action Cards */}
@@ -39,25 +43,30 @@ const MockInterviewDashboard = () => {
           <ActionCard
             icon={FileText}
             title="Start Job Readiness Assessment"
-            onClick={() => handleCardClick('Job Readiness Assessment')}
+            onClick={() => handleCardClick("Job Readiness Assessment")}
           />
           <ActionCard
             icon={Target}
             title="Start Mock Interview"
-            onClick={() => handleCardClick('Mock Interview')}
+            onClick={() => handleCardClick("Mock Interview")}
           />
           <ActionCard
             icon={HelpCircle}
             title="Start Practicing Questions"
-            onClick={() => handleCardClick('Practicing Questions')}
+            onClick={() => handleCardClick("Practicing Questions")}
           />
         </div>
         {/* Interview Table */}
         <InterviewTable />
       </div>
-      <JobReadinessAssessmentForm open={showAssessmentForm} onClose={() => setShowAssessmentForm(false)} />
-      <MockInterviewForm open={showMockInterviewForm} onClose={() => setMockInterviewForm(false)} />
-
+      <JobReadinessAssessmentForm
+        open={showAssessmentForm}
+        onClose={() => setShowAssessmentForm(false)}
+      />
+      <MockInterviewForm
+        open={showMockInterviewForm}
+        onClose={() => setMockInterviewForm(false)}
+      />
     </div>
   );
 };
