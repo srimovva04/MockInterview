@@ -5,7 +5,7 @@ import InterviewTable from "./InterviewTable";
 import { useNavigate } from "react-router-dom";
 import OnboardingBanner from "./OnboardingBanner";
 import JobReadinessAssessmentForm from "./JobReadinessAssessmentForm";
-import { MockInterviewForm } from "./MockInterviewForm";
+import { MockInterviewForm } from "./mock/MockInterviewForm";
 
 const MockInterviewDashboard = () => {
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
