@@ -151,6 +151,9 @@ export default function FilterBar({ filters, setFilters }) {
         <option value="">Company</option>
         {[
           "Google",
+          "Microsoft",
+          "Apple",
+          "Stripe",
           "Namura",
           "Facebook",
           "Snapchat",
