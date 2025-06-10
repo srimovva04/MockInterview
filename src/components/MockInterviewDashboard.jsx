@@ -4,7 +4,7 @@ import ActionCard from "./ActionCard";
 import InterviewTable from "./InterviewTable";
 import { useNavigate } from "react-router-dom";
 import OnboardingBanner from "./OnboardingBanner";
-import JobReadinessAssessmentForm from "./JobReadinessAssessmentForm";
+import JobReadinessAssessmentForm from "./job_readiness/Forms";
 import { MockInterviewForm } from "./mock/MockInterviewForm";
 
 const MockInterviewDashboard = () => {

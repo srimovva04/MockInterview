@@ -1,30 +1,6 @@
 import React, { useState, useEffect } from "react";
-const handleFileUpload = async () => {
-  if (!resumeFile) {
-    alert("Please select a file before uploading.");
-    return;
-  }
+import { useNavigate } from "react-router-dom";
 
-  const formData = new FormData();
-  formData.append("resume", resumeFile);
-
-  try {
-    const response = await fetch("/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok) {
-      alert("File uploaded successfully!");
-      setResumeFile(null); // Clear the file after successful upload
-    } else {
-      alert("Failed to upload file. Please try again.");
-    }
-  } catch (error) {
-    console.error("Error uploading file:", error);
-    alert("An error occurred during file upload. Please try again.");
-  }
-};
 const JobReadinessAssessmentForm = ({ open, onClose }) => {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -36,6 +12,7 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
   });
   const [errors, setErrors] = useState({});
   const [resumeFile, setResumeFile] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (open) {
@@ -51,6 +28,39 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
       setResumeFile(null);
     }
   }, [open]);
+
+  const handleFileUpload = async () => {
+    if (!resumeFile) {
+      alert("Please select a file before uploading.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("resume", resumeFile);
+
+    try {
+      const response = await fetch("/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert("File uploaded successfully!");
+        setResumeFile(null); // Clear the file after successful upload
+        setStep(3); // Move to the next step
+      } else {
+        alert("Failed to upload file. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("An error occurred during file upload. Please try again.");
+    }
+  };
+
+  const handleResumeSelection = (file) => {
+    setResumeFile(file);
+    setStep(3); // Automatically move to the next step after selecting a file
+  };
 
   if (!open) return null;
 
@@ -236,7 +246,7 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
               <input
                 type="file"
                 accept=".pdf,.doc,.docx"
-                onChange={(e) => setResumeFile(e.target.files[0])}
+                onChange={(e) => handleResumeSelection(e.target.files[0])}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2"
               />
               <button
@@ -265,6 +275,44 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
                 Selected file: {resumeFile.name}
               </p>
             )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 3) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div
+          className="absolute inset-0 backdrop-blur-sm bg-black/30 transition-opacity"
+          onClick={onClose}
+        />
+        <div className="relative bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] p-6 pointer-events-auto overflow-auto">
+          <button
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+          <h2 className="text-xl font-semibold mb-4">Job Readiness Assessment</h2>
+          <hr className="mb-6" />
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-4 overflow-auto">
+            <span className="block text-xl font-semibold text-gray-900 mb-4">
+              Your data analyst (Entry-Level) Readiness Assessment
+            </span>
+            <ul className="list-disc pl-5 text-gray-700">
+              <li>Discover your current job market readiness</li>
+              <li>Identify skill gaps and improvement areas</li>
+              <li>Quick 20 minute personalized assessment</li>
+            </ul>
+            <button
+              className="bg-blue-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors mt-6"
+              onClick={() => navigate("/job-readiness-assessment")}
+            >
+              Start Assessment
+            </button>
           </div>
         </div>
       </div>
