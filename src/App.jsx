@@ -39,6 +39,8 @@ import Signin from "./components/signin";
 import Signup from "./components/signup";
 import ProtectedRoute from "./components/protectedRoute";
 import { UserAuth } from "./components/AuthContext";
+import AdminDashboard from "./components/AdminDashboard";
+
 
 function App() {
   const { session } = UserAuth();
@@ -48,6 +50,15 @@ function App() {
       <Route path="/" element={<Navigate to="/signup" replace />} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/signup" element={<Signup />} />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
 
       {/* Protected Routes */}
       <Route
