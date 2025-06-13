@@ -2,6 +2,9 @@ import React from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import MockInterviewDashboard from "../components/MockInterviewDashboard";
+import OnboardingBanner from "../components/OnboardingBanner";
+import Signin from "../components/signin";
+import Signup from "../components/signup";
 
 const Index = () => {
   return (
@@ -20,6 +23,7 @@ const Index = () => {
 
         {/* Main content takes up remaining space */}
         <div className="flex-1 overflow-y-auto p-6">
+          {/* <Signup /> */}
           <MockInterviewDashboard />
         </div>
       </div>
