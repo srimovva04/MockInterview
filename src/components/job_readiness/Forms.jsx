@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../utils/supabaseClient";
+import { uploadResume } from "../utils/uploadResume";
 
 const JobReadinessAssessmentForm = ({ open, onClose }) => {
   const [step, setStep] = useState(1);
+  const [fileError, setFileError] = useState("");
   const [form, setForm] = useState({
     position: "",
     roleLevel: "",
@@ -30,36 +33,91 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
   }, [open]);
 
   const handleFileUpload = async () => {
-    if (!resumeFile) {
-      alert("Please select a file before uploading.");
-      return;
-    }
+    console.log("Upload button clicked"); // ✅ DEBUG LINE
 
-    const formData = new FormData();
-    formData.append("resume", resumeFile);
+    if (!resumeFile) return alert("Please select a file before uploading.");
 
     try {
-      const response = await fetch("/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (error || !user) return alert("User not authenticated.");
+      const filePath = await uploadResume(resumeFile, user.id);
+      const role_level_id = await getOrCreate("role_levels", form.roleLevel);
+      const company_id = await getOrCreate("companies", form.company);
 
-      if (response.ok) {
-        alert("File uploaded successfully!");
-        setResumeFile(null); // Clear the file after successful upload
-        setStep(3); // Move to the next step
-      } else {
-        alert("Failed to upload file. Please try again.");
+      const { error: insertError } = await supabase
+        .from("job_readiness_assessments")
+        .insert({
+          user_id: user.id,
+          position: form.position,
+          role_level_id,
+          company_id,
+          job_description: form.jobDescription,
+          company_details: form.companyDetails,
+          resume_url: filePath,
+        });
+
+      if (insertError) {
+        console.error(insertError);
+        return alert("Error saving data");
       }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("An error occurred during file upload. Please try again.");
+
+      alert("Data saved successfully!");
+      setStep(3);
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Unexpected error occurred");
     }
   };
 
   const handleResumeSelection = (file) => {
-    setResumeFile(file);
-    setStep(3); // Automatically move to the next step after selecting a file
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+
+    if (file.size > maxSize) {
+      setFileError("File size should not exceed 5 MB.");
+      setResumeFile(null);
+    } else {
+      setFileError("");
+      setResumeFile(file);
+    }
+  };
+
+  const getOrCreate = async (table, name) => {
+    if (!name || name.trim() === "") {
+      console.error(`[getOrCreate] Empty name passed for table: ${table}`);
+      return null;
+    }
+
+    console.log(`[getOrCreate] Looking up '${name}' in ${table}`);
+
+    const { data: existing, error: selectError } = await supabase
+      .from(table)
+      .select("id")
+      .eq("name", name)
+      .maybeSingle(); // ✅ instead of .single()
+
+    if (selectError) {
+      console.warn(`[getOrCreate] Select error:`, selectError.message);
+    }
+
+    if (existing?.id) return existing.id;
+
+    const { data: inserted, error: insertError } = await supabase
+      .from(table)
+      .insert({ name })
+      .select()
+      .single(); // this is fine for insert
+
+    if (insertError) {
+      console.error(`[getOrCreate] Insert error:`, insertError.message);
+      return null;
+    }
+
+    return inserted.id;
   };
 
   if (!open) return null;
@@ -275,6 +333,9 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
                 Selected file: {resumeFile.name}
               </p>
             )}
+            {fileError && (
+              <p className="text-sm text-red-600 mt-1">{fileError}</p>
+            )}
           </div>
         </div>
       </div>
@@ -296,7 +357,9 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
           >
             ×
           </button>
-          <h2 className="text-xl font-semibold mb-4">Job Readiness Assessment</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Job Readiness Assessment
+          </h2>
           <hr className="mb-6" />
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-4 overflow-auto">
             <span className="block text-xl font-semibold text-gray-900 mb-4">

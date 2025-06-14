@@ -120,7 +120,7 @@ const Feedback = () => {
       </h2>
       <button
         className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-9900 transition-all"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/home')}
       >
         Go to Dashboard
       </button>
