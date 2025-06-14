@@ -4,7 +4,6 @@ import { Users, Target, FileText, BookOpen, Cpu, Zap, User, BarChart3 } from 'lu
 
 const Sidebar = () => {
   const menuItems = [
-    { icon: Users, label: 'Live Interview', active: false },
     { icon: Target, label: 'Mock Interview', active: true },
     { icon: BookOpen, label: 'Preparation Hub', active: false },
     { icon: FileText, label: 'Document Center', active: false },

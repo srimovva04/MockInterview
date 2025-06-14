@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import OnboardingBanner from "./OnboardingBanner";
 import JobReadinessAssessmentForm from "./job_readiness/Forms";
 import { MockInterviewForm } from "./mock/MockInterviewForm";
+import InterviewReminder from "./mock/InterviewReminder";
 
 const MockInterviewDashboard = () => {
   const [showAssessmentForm, setShowAssessmentForm] = useState(false);
@@ -27,6 +28,7 @@ const MockInterviewDashboard = () => {
   return (
     <div className="flex-1 overflow-auto">
       <div className="p-8">
+        <InterviewReminder />
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Mock Interview</h1>
