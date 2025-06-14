@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabaseClient";
 import { uploadResume } from "../utils/uploadResume";
+import JobReadinessGoalSelector from "./JobReadinessGoalSelector";
 
 const JobReadinessAssessmentForm = ({ open, onClose }) => {
   const [step, setStep] = useState(1);
+  const [selectedGoal, setSelectedGoal] = useState(null);
+
   const [fileError, setFileError] = useState("");
   const [form, setForm] = useState({
     position: "",
@@ -15,10 +18,13 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
   });
   const [errors, setErrors] = useState({});
   const [resumeFile, setResumeFile] = useState(null);
+  const [showGoalSelector, setShowGoalSelector] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (open) {
+    if (open && showGoalSelector === false && selectedGoal) {
+      setStep(3); // Ensure step remains at 3 when a goal is selected
+    } else if (open && showGoalSelector === false && !selectedGoal) {
       setStep(1);
       setErrors({});
       setForm({
@@ -30,7 +36,7 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
       });
       setResumeFile(null);
     }
-  }, [open]);
+  }, [open, showGoalSelector, selectedGoal]);
 
   const handleFileUpload = async () => {
     console.log("Upload button clicked"); // ✅ DEBUG LINE
@@ -134,6 +140,27 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  const handleSelectExistingGoal = (goal) => {
+    console.log("Selected existing goal:", goal);
+    setSelectedGoal(goal); // ✅ store the selected goal
+    setShowGoalSelector(false);
+    setStep(3); // ✅ skip directly to step 3
+  };
+
+  const handleCreateNewGoal = () => {
+    setShowGoalSelector(false);
+    setStep(1); // Start step 1 for creating a new goal
+  };
+
+  if (showGoalSelector) {
+    return (
+      <JobReadinessGoalSelector
+        onSelectExisting={handleSelectExistingGoal}
+        onCreateNew={handleCreateNewGoal}
+      />
+    );
+  }
 
   if (step === 1) {
     return (
@@ -343,6 +370,7 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
   }
 
   if (step === 3) {
+      console.log("✅ Step 3 rendered with goal:", selectedGoal);
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div
@@ -363,8 +391,9 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
           <hr className="mb-6" />
           <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-4 overflow-auto">
             <span className="block text-xl font-semibold text-gray-900 mb-4">
-              Your data analyst (Entry-Level) Readiness Assessment
-            </span>
+  Your {selectedGoal?.position || "target role"} Readiness Assessment
+</span>
+
             <ul className="list-disc pl-5 text-gray-700">
               <li>Discover your current job market readiness</li>
               <li>Identify skill gaps and improvement areas</li>
