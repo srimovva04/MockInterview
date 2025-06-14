@@ -12,26 +12,54 @@ const InterviewTable = () => {
       : interviews.filter((interview) => interview.status === filter);
 
   useEffect(() => {
-    const fetchInterviews = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+  const fetchData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-      if (!user) return;
-
-      const { data, error } = await supabase
+    const [interviewsRes, assessmentsRes] = await Promise.all([
+      supabase
         .from('interview')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }),
 
-      if (!error) {
-        setInterviews(data || []);
-      } else {
-        console.error('Error fetching interviews:', error);
-      }
-    };
+      supabase
+        .from('job_readiness_assessments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+    ]);
 
-    fetchInterviews();
-  }, []);
+    if (interviewsRes.error || assessmentsRes.error) {
+      console.error('Error fetching data:', interviewsRes.error || assessmentsRes.error);
+      return;
+    }
+
+    // Normalize both into same format
+    const interviews = (interviewsRes.data || []).map(item => ({
+      source: 'interview',
+      interview: item.interview || item.position || 'Mock Interview',
+      position: item.position || '',
+      status: item.status || 'Completed',
+      appointment: item.appointment || 'N/A',
+      id: item.id,
+    }));
+
+    const assessments = (assessmentsRes.data || []).map(item => ({
+      source: 'assessment',
+      interview: 'Job Readiness Assessment',
+      position: item.position,
+      status: 'Completed',
+      appointment: 'N/A',
+      id: item.id,
+    }));
+
+    // Combine
+    setInterviews([...interviews, ...assessments]);
+  };
+
+  fetchData();
+}, []);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -70,39 +98,56 @@ const InterviewTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {filteredInterviews.map((interview, index) => (
-              <tr key={index} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {interview.interview || '—'}
-                    </div>
-                    {interview.position && (
-                      <div className="text-sm text-gray-500">{interview.position}</div>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(interview.status)}`}>
-                    {interview.status || 'Unknown'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {interview.appointment === 'N/A'
-                    ? 'N/A'
-                    : new Date(interview.appointment).toLocaleString()}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center space-x-2">
-                    <button className="flex items-center space-x-1 text-sm text-gray-600 hover:text-orange-600 transition-colors">
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Read Report</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {filteredInterviews.map((interview, index) => (
+    <tr key={index} className="hover:bg-gray-50">
+      <td className="px-6 py-4">
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            {interview.source === 'assessment' ? 'Job Readiness Assessment' : (interview.interview || '—')}
+          </div>
+          {interview.position && (
+            <div className="text-sm text-gray-500">{interview.position}</div>
+          )}
+        </div>
+      </td>
+
+      <td className="px-6 py-4">
+        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(interview.status)}`}>
+          {interview.status || 'Unknown'}
+        </span>
+      </td>
+
+      <td className="px-6 py-4 text-sm text-gray-500">
+        {interview.appointment === 'N/A'
+          ? 'N/A'
+          : new Date(interview.appointment).toLocaleString()}
+      </td>
+
+      <td className="px-6 py-4">
+        <div className="flex items-center space-x-2">
+          {interview.source === 'assessment' ? (
+            <button
+              className="flex items-center space-x-1 text-sm text-gray-600 hover:text-orange-600 transition-colors"
+              onClick={() => window.open(`/learning-path/${interview.id}`, '_blank')}
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>Explore Learning Path</span>
+            </button>
+          ) : (
+            <button
+              className="flex items-center space-x-1 text-sm text-gray-600 hover:text-orange-600 transition-colors"
+              onClick={() => window.open(`/generate-report/${interview.id}`, '_blank')}
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>Generate Report</span>
+            </button>
+          )}
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
 

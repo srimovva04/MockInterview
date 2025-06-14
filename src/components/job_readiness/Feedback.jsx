@@ -16,7 +16,7 @@ const Feedback = () => {
 
       <button
         className="bg-blue-950 text-white px-5 py-2 rounded-md hover:bg-blue-900 transition mb-6"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/home")}
       >
         Return Home
       </button>
