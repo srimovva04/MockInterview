@@ -24,9 +24,7 @@ const Index = () => {
 
         {/* Main content takes up remaining space */}
         <div className="flex-1 overflow-y-auto p-6">
-          {/* <Signup /> */}
           <MockInterviewDashboard />
-          <AdminDashboard />
         </div>
       </div>
     </div>

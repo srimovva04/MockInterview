@@ -40,8 +40,7 @@ import Signup from "./components/signup";
 import ProtectedRoute from "./components/protectedRoute";
 import { UserAuth } from "./components/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
-import InterviewReminder from './components/mock/InterviewReminder';
-
+import InterviewReminder from "./components/mock/InterviewReminder";
 
 function App() {
   const { session } = UserAuth();
@@ -60,17 +59,7 @@ function App() {
         }
       />
 
-
       {/* Protected Routes */}
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <InterviewReminder />
-            <Index />
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/home"
         element={
