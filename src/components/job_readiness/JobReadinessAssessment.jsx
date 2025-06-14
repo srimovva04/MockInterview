@@ -50,47 +50,61 @@ const JobReadinessAssessment = () => {
     return () => clearInterval(interval);
   }, []);
 
-useEffect(() => {
+
+  useEffect(() => {
   const logJobReadinessStart = async () => {
     const { data: { user }, error } = await supabase.auth.getUser();
-
     if (error || !user) {
       console.error("User not authenticated:", error);
-      return;
-    }
-
-    // Avoid inserting duplicate entries (e.g., check for recent entry)
-    const { data: existing } = await supabase
-      .from("interview")
-      .select("*")
-      .eq("user_id", user.id)
-      .eq("interview", "Job Readiness Assessment")
-      .order("created_at", { ascending: false })
-      .limit(1);
-
-    const isDuplicate = existing?.[0] && Date.now() - new Date(existing[0].created_at).getTime() < 5 * 60 * 1000;
-
-    if (!isDuplicate) {
-      const { error: insertError } = await supabase.from("interview").insert([
-        {
-          user_id: user.id,
-          interview: "Job Readiness Assessment",
-          position: "data analyst", // or dynamically set
-          status: "Completed", // Or "Pending" if you want to update later
-          appointment: "N/A",
-        },
-      ]);
-
-      if (insertError) {
-        console.error("Error logging interview:", insertError);
-      } else {
-        console.log("Job Readiness logged in interview history.");
-      }
+    } else {
+      console.log("User authenticated:", user.email);
     }
   };
 
   logJobReadinessStart();
 }, []);
+
+// useEffect(() => {
+//   const logJobReadinessStart = async () => {
+//     const { data: { user }, error } = await supabase.auth.getUser();
+
+//     if (error || !user) {
+//       console.error("User not authenticated:", error);
+//       return;
+//     }
+
+//     // Avoid inserting duplicate entries (e.g., check for recent entry)
+//     const { data: existing } = await supabase
+//       .from("interview")
+//       .select("*")
+//       .eq("user_id", user.id)
+//       .eq("interview", "Job Readiness Assessment")
+//       .order("created_at", { ascending: false })
+//       .limit(1);
+
+//     const isDuplicate = existing?.[0] && Date.now() - new Date(existing[0].created_at).getTime() < 5 * 60 * 1000;
+
+//     if (!isDuplicate) {
+//       const { error: insertError } = await supabase.from("interview").insert([
+//         {
+//           user_id: user.id,
+//           interview: "Job Readiness Assessment",
+//           position: "data analyst", // or dynamically set
+//           status: "Completed", // Or "Pending" if you want to update later
+//           appointment: "N/A",
+//         },
+//       ]);
+
+//       if (insertError) {
+//         console.error("Error logging interview:", insertError);
+//       } else {
+//         console.log("Job Readiness logged in interview history.");
+//       }
+//     }
+//   };
+
+//   logJobReadinessStart();
+// }, []);
 
   const formatTime = (secs) => {
     const minutes = String(Math.floor(secs / 60)).padStart(2, "0");
