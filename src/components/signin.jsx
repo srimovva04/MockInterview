@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "./AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { supabase } from "./utils/supabaseClient.js"; // adjust the import path as needed
+import { supabase } from "./utils/supabaseClient.js"; 
 
 const Signin = () => {
   const [email, setEmail] = useState("");

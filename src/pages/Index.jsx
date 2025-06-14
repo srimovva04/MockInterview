@@ -5,6 +5,7 @@ import MockInterviewDashboard from "../components/MockInterviewDashboard";
 import OnboardingBanner from "../components/OnboardingBanner";
 import Signin from "../components/signin";
 import Signup from "../components/signup";
+import AdminDashboard from "../components/AdminDashboard";
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
         <div className="flex-1 overflow-y-auto p-6">
           {/* <Signup /> */}
           <MockInterviewDashboard />
+          <AdminDashboard />
         </div>
       </div>
     </div>

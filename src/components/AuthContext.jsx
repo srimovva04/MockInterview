@@ -6,10 +6,16 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [session, setSession] = useState(null); // ✅ default is null not "Hey"
 
-  const signUpNewUser = async (email, password) => {
+  const signUpNewUser = async (email, password, fullName, phoneNo) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          display_name: fullName,
+          phone: phoneNo,
+        },
+      },
     });
 
     if (error) {
