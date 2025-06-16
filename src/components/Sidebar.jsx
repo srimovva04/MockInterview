@@ -26,9 +26,8 @@ const Sidebar = () => {
         error: userError,
       } = await supabase.auth.getUser();
 
-      if (userError || !user) return setRole("user"); // fallback
+      if (userError || !user) return setRole("user");
 
-      // Set full name
       setFullName(user.user_metadata?.display_name || "User");
 
       const { data: roleData, error: roleError } = await supabase
@@ -49,7 +48,7 @@ const Sidebar = () => {
     fetchRole();
   }, []);
 
-  if (loading) return null; // or show a spinner
+  if (loading) return null;
 
   const userMenuItems = [
     { icon: Users, label: "Live Interview", active: false },
@@ -64,19 +63,14 @@ const Sidebar = () => {
     { icon: Settings, label: "Manage App", active: false },
   ];
 
-  const tools = [
-    { icon: Cpu, label: "AI Material Generator", active: false },
-    { icon: Zap, label: "Auto Apply", badge: "Beta", active: false },
-  ];
-
   const menuItems = role === "admin" ? adminMenuItems : userMenuItems;
 
   return (
-    <div className="w-64 h-screen flex flex-col">
+    <div className="w-64 h-screen flex flex-col bg-gradient-to-b from-blue-100 via-white to-white text-gray-800 border-r border-blue-200">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-blue-200">
         <div className="flex items-center space-x-2">
-          <div className="bg-blue-950 text-white px-2 py-1 rounded text-sm font-bold">
+          <div className="bg-blue-600 text-white px-2 py-1 rounded text-sm font-bold">
             Final Round
           </div>
           <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-medium">
@@ -87,37 +81,22 @@ const Sidebar = () => {
 
       {/* Menu Section */}
       <div className="p-4">
-        <h3 className="text-sm font-medium text-white mb-3">
+        <h3 className="text-sm font-medium text-blue-800 mb-3">
           {role === "admin" ? "Admin Panel" : "Interview"}
         </h3>
-        {/* <nav className="space-y-1">
-          {menuItems.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveTab(item.label)}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                activeTab === item.label
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-white hover:bg-gray-50 hover:text-gray-900"
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.label}</span>
-            </button>
-          ))}
-        </nav> */}
+
         <nav className="space-y-1">
           {menuItems.map((item, index) => (
             <button
               key={index}
               className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                 item.active
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-white hover:bg-gray-50 hover:text-gray-900"
+                  ? "bg-blue-200 text-blue-900 font-semibold"
+                  : "hover:bg-blue-100 hover:text-blue-900 text-gray-700"
               }`}
             >
               <item.icon className="w-5 h-5" />
-              <span className="text-sm font-medium">{item.label}</span>
+              <span className="text-sm">{item.label}</span>
             </button>
           ))}
         </nav>
@@ -125,23 +104,19 @@ const Sidebar = () => {
 
       {/* Bottom Section */}
       <div className="mt-auto p-4 space-y-2">
-        <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+        <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors hover:bg-blue-100 hover:text-blue-900 text-gray-700">
           <User className="w-5 h-5" />
-          <span className="text-sm text-white font-medium hover:text-gray-900">
-            {fullName}
-          </span>
+          <span className="text-sm">{fullName}</span>
         </button>
-        <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+        <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors hover:bg-blue-100 hover:text-blue-900 text-gray-700">
           <BarChart3 className="w-5 h-5" />
-          <span className="text-sm text-white font-medium hover:text-gray-900">
-            Plan Usage & Other
-          </span>
+          <span className="text-sm">Plan Usage & Other</span>
         </button>
 
-        <button className="w-full bg-blue-600 text-white py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+        <button className="button button-md w-full">
           {role === "admin" ? "Admin Plan" : "Interview Plan"}
         </button>
-        <button className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-colors">
+        <button className="button button-md w-full">
           Auto Apply Plan
         </button>
       </div>

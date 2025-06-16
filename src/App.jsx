@@ -42,6 +42,8 @@ import { UserAuth } from "./components/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
 
+import './styles.css';
+
 function App() {
   const { session } = UserAuth();
 

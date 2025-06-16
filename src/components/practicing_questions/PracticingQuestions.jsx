@@ -51,7 +51,7 @@ export default function PreparationHub() {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="p-6 min-h-screen bg-radial-blue">
       <h1 className="text-2xl font-bold mb-4">Question Bank</h1>
       <FilterBar filters={filters} setFilters={setFilters} />
       <div>

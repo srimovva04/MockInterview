@@ -282,7 +282,7 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
 
             <div className="flex space-x-3 mt-4">
               <button
-                className="bg-blue-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                className="button button-s"
                 onClick={() => {
                   if (validateStep1()) {
                     setStep(2);
@@ -400,7 +400,7 @@ const JobReadinessAssessmentForm = ({ open, onClose }) => {
               <li>Quick 20 minute personalized assessment</li>
             </ul>
             <button
-              className="bg-blue-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors mt-6"
+              className="button button-m mt-5"
               onClick={() => navigate("/job-readiness-assessment")}
             >
               Start Assessment

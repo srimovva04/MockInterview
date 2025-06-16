@@ -46,8 +46,8 @@ const MockInterviewDashboard = () => {
       <div className="p-8">
         <InterviewReminder />
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Mock Interview</h1>
-          <p className="text-white/80 text-lg leading-relaxed max-w-4xl">
+          <h1 className="text-3xl font-bold text-black mb-2">Mock Interview</h1>
+          <p className="text-black/80 text-lg leading-relaxed max-w">
             Sharpen your interview skills with AI Mock Interview—your personal,
             on-demand interview coach. Get realistic practice sessions, instant
             feedback, and tailored questions based on your target role. Practice

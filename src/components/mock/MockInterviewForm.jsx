@@ -283,7 +283,7 @@ const handleResumeUpload = async (e) => {
                 type="button"
                 onClick={() => setScheduleNow(true)}
                 className={`px-4 py-2 rounded border ${
-                  scheduleNow ? 'bg-blue-800 text-white' : 'bg-gray-100 text-blue-800'
+                  scheduleNow ? 'button button-m' : 'bg-gray-100 text-blue-800'
                 }`}
               >
                 Immediately
@@ -292,7 +292,7 @@ const handleResumeUpload = async (e) => {
                 type="button"
                 onClick={() => setScheduleNow(false)}
                 className={`px-4 py-2 rounded border ${
-                  !scheduleNow ? 'bg-blue-800 text-white' : 'bg-gray-100 text-blue-800'
+                  !scheduleNow ? 'button button-m' : 'bg-gray-100 text-blue-800'
                 }`}
               >
                 Set Date and Time
@@ -346,7 +346,7 @@ const handleResumeUpload = async (e) => {
             <button type="button" onClick={onClose} className="px-4 py-2 rounded border text-gray-700">
               Cancel
             </button>
-            <button type="submit" className="px-6 py-2 bg-blue-800 text-white rounded">
+            <button type="submit" className="button button-m">
               Launch
             </button>
           </div>
