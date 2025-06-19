@@ -113,13 +113,13 @@ const Feedback = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-900 px-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-radial-blue">
       <span className="text-9xl p-6">🎉</span>
       <h2 className="text-2xl p-2 font-semibold mb-4 text-center">
         Well done! You’ve finished your mock interview.
       </h2>
       <button
-        className="bg-blue-950 text-white px-4 py-2 rounded hover:bg-blue-9900 transition-all"
+        className="button button-lg"
         onClick={() => navigate('/home')}
       >
         Go to Dashboard
@@ -133,7 +133,7 @@ const Feedback = () => {
           {renderQuestion()}
           <button
             onClick={handleNext}
-            className="mt-6 w-full bg-blue-950 text-white py-2 rounded hover:bg-blue-900 transition-all"
+            className="button button-m w-full  mt-5"
           >
             {currentQuestionIndex < questions.length - 1 ? "Next" : "Submit"}
           </button>

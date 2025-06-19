@@ -41,6 +41,9 @@ import ProtectedRoute from "./components/protectedRoute";
 import { UserAuth } from "./components/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
+import ATSChecker from "./components/ATSChecker"; // Adjust path if needed
+
+import './styles.css';
 import PreparationHub from "./pages/PreparationHub";
 
 function App() {
@@ -102,6 +105,8 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/ats-checker" element={<ATSChecker />} />
+      
 
       <Route
         path="/preparation-hub"

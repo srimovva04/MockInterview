@@ -15,7 +15,7 @@ const Feedback = () => {
       </h2>
 
       <button
-        className="bg-blue-950 text-white px-5 py-2 rounded-md hover:bg-blue-900 transition mb-6"
+        className="button button-m mb-5"
         onClick={() => navigate("/home")}
       >
         Return Home
@@ -44,16 +44,16 @@ const Feedback = () => {
         </div>
 
         <button
-          className="w-full bg-blue-950 text-white py-2 rounded-md hover:bg-blue-900 transition"
+          className="w-full button button-m"
           onClick={() => alert("Next feedback step or submit logic here.")}
         >
           Next
         </button>
       </div>
 
-      <div className="mt-6 text-green-600 text-xs">
+      {/* <div className="mt-6 text-green-600 text-xs">
         Secured by 256-bit AES and 256-bit SSL/TLS encryption
-      </div>
+      </div> */}
     </div>
   );
 };
