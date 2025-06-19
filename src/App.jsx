@@ -41,6 +41,7 @@ import ProtectedRoute from "./components/protectedRoute";
 import { UserAuth } from "./components/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
+import PreparationHub from "./pages/PreparationHub";
 
 function App() {
   const { session } = UserAuth();
@@ -98,6 +99,15 @@ function App() {
         element={
           <ProtectedRoute>
             <Feedback />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/preparation-hub"
+        element={
+          <ProtectedRoute>
+            <PreparationHub />
           </ProtectedRoute>
         }
       />

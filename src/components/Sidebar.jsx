@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Users,
   Target,
@@ -18,6 +19,7 @@ const Sidebar = () => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState("User");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRole = async () => {
@@ -54,7 +56,7 @@ const Sidebar = () => {
   const userMenuItems = [
     { icon: Users, label: "Live Interview", active: false },
     { icon: Target, label: "Mock Interview", active: true },
-    { icon: BookOpen, label: "Preparation Hub", active: false },
+    { icon: BookOpen, label: "Preparation Hub",route: "/preparation-hub" },
     { icon: FileText, label: "Document Center", active: false },
   ];
 
@@ -110,6 +112,7 @@ const Sidebar = () => {
           {menuItems.map((item, index) => (
             <button
               key={index}
+              onClick={() => navigate(item.route)}
               className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                 item.active
                   ? "bg-gray-100 text-gray-900"
