@@ -47,7 +47,7 @@ import PreparationHub from "./pages/PreparationHub";
 import InternshipDashboard from "./components/internship/InternshipDashboard";
 import SimulationDetail from "./components/internship/SimulationDetail";
 import SimulationTaskPage from "./components/internship/SimulationTaskPage";
-
+import ProgressPage from "./components/internship/ProgressPage";
 
 
 function App() {
@@ -139,6 +139,7 @@ function App() {
         } 
       />
       <Route path="/internship/:id/task/:taskId" element={<SimulationTaskPage />} />
+      <Route path="/progress" element={<ProgressPage />} />
 
 
 
