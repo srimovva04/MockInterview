@@ -14,6 +14,7 @@ import {
   Settings,
   Check,
   Scan,
+  GraduationCap,
 } from "lucide-react";
 import { supabase } from "./utils/supabaseClient";
 import { useLocation } from "react-router-dom";
@@ -57,12 +58,12 @@ const Sidebar = () => {
   if (loading) return null;
 
   const userMenuItems = [
-    {
-      icon: Users,
-      label: "Live Interview",
-      active: false,
-      path: "/live-interview",
-    },
+    // {
+    //   icon: Users,
+    //   label: "Live Interview",
+    //   active: false,
+    //   path: "/live-interview",
+    // },
     { icon: Target, label: "Mock Interview", active: true, path: "/home" },
     {
       icon: BookOpen,
@@ -82,7 +83,13 @@ const Sidebar = () => {
       label: "ATS Score Checker",
       active: false,
       path: "/ats-checker",
-    }, // Add path for ATS Checker
+    },
+    {
+      icon: GraduationCap,
+      label: "Virtual Internship",
+      active: false,
+      path: "/internship",
+    },
   ];
 
   const adminMenuItems = [

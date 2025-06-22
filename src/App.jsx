@@ -31,6 +31,7 @@
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
+import './styles.css';
 import VideoCallContent from "./components/mock/VideoCallContent";
 import PracticingQuestions from "./components/practicing_questions/PracticingQuestions";
 import JobReadinessAssessment from "./components/job_readiness/JobReadinessAssessment";
@@ -41,13 +42,15 @@ import ProtectedRoute from "./components/protectedRoute";
 import { UserAuth } from "./components/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
-import ATSChecker from "./components/ATSChecker";
-import ScanResults from "./components/ScanResults";
-import Results from "./components/Results";
+import ATSChecker from "./components/ATSChecker"; // Adjust path if needed
 
-
-import "./styles.css";
+import './styles.css';
 import PreparationHub from "./pages/PreparationHub";
+import InternshipDashboard from "./components/internship/InternshipDashboard";
+import SimulationDetail from "./components/internship/SimulationDetail";
+import SimulationTaskPage from "./components/internship/SimulationTaskPage";
+import ProgressPage from "./components/internship/ProgressPage";
+
 
 function App() {
   const { session } = UserAuth();
@@ -118,9 +121,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route path="/results" element={<ScanResults />} />
-      <Route path="/results" element={<Results />} />
-
     </Routes>
   );
 }

@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
+
 @theme {
   --btn-bg: theme(colors.blue.500);
   --btn-bg-hover: theme(colors.blue.600);
