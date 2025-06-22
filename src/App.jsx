@@ -41,9 +41,12 @@ import ProtectedRoute from "./components/protectedRoute";
 import { UserAuth } from "./components/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
-import ATSChecker from "./components/ATSChecker"; // Adjust path if needed
+import ATSChecker from "./components/ATSChecker";
+import ScanResults from "./components/ScanResults";
+import Results from "./components/Results";
 
-import './styles.css';
+
+import "./styles.css";
 import PreparationHub from "./pages/PreparationHub";
 
 function App() {
@@ -106,7 +109,6 @@ function App() {
         }
       />
       <Route path="/ats-checker" element={<ATSChecker />} />
-      
 
       <Route
         path="/preparation-hub"
@@ -116,6 +118,9 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route path="/results" element={<ScanResults />} />
+      <Route path="/results" element={<Results />} />
+
     </Routes>
   );
 }
