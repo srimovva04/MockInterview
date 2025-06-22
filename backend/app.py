@@ -37,14 +37,15 @@
 
 
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 import os
 from resume_parser import extract_text_from_pdf
 from match_gemini import match_skills
 
 app = Flask(__name__)
 # CORS(app, origins="http://localhost:5174")  # ✅ Allow Vite
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}})
+from flask_cors import CORS
+
+CORS(app, supports_credentials=True, origins="*")
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

@@ -43,13 +43,13 @@ import { UserAuth } from "./components/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
 import ATSChecker from "./components/ATSChecker"; // Adjust path if needed
-
-import './styles.css';
 import PreparationHub from "./pages/PreparationHub";
 import InternshipDashboard from "./components/internship/InternshipDashboard";
 import SimulationDetail from "./components/internship/SimulationDetail";
 import SimulationTaskPage from "./components/internship/SimulationTaskPage";
 import ProgressPage from "./components/internship/ProgressPage";
+import ATSScanner from "./components/ATSChecker"; 
+import ScanResults from "./components/ScanResults";
 
 
 function App() {
@@ -122,6 +122,46 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route 
+        path="/internship"
+        element={
+          <ProtectedRoute>
+            <InternshipDashboard/>
+          </ProtectedRoute>
+        }
+      />
+      
+      <Route 
+        path="/simulation/:id" 
+        element={
+          <ProtectedRoute>
+            <SimulationDetail />
+          </ProtectedRoute>
+        } 
+      />
+      <Route path="/internship/:id/task/:taskId" element={<SimulationTaskPage />} />
+      <Route path="/progress" element={<ProgressPage />} />
+      <Route 
+        path="/ats-scanner" 
+        element={
+          <ProtectedRoute>
+            <SimulationDetail />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/results" 
+        element={
+          <ProtectedRoute>
+            <ScanResults />
+          </ProtectedRoute>
+        }
+      />
+
+
+
+
     </Routes>
   );
 }
