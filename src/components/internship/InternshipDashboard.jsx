@@ -37,7 +37,7 @@ const InternshipDashboard = () => {
         className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-900 text-white px-6 py-3 rounded-full shadow-lg z-50"
         onClick={() => navigate('/progress')}
       >
-        📈 Track Progress
+       Track Progress
       </button>
 
       <div className="flex-1 ml-64 overflow-y-auto p-8">

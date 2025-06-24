@@ -51,6 +51,9 @@ import ProgressPage from "./components/internship/ProgressPage";
 import ATSScanner from "./components/ATSChecker"; 
 import ScanResults from "./components/ScanResults";
 
+import AddInternship from "./components/admin/AddInternship";
+import SimulationsManager from "./components/admin/SimulationsManager";
+
 
 function App() {
   const { session } = UserAuth();
@@ -68,6 +71,16 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+              path="/add-internship"
+              element={
+                <ProtectedRoute>
+                  <AddInternship />
+                </ProtectedRoute>
+              }
+            />    
+            <Route path="/edit-internship" element={<SimulationsManager />} />
+            <Route path="/edit-internship/:id" element={<SimulationsManager />} />
 
       {/* Protected Routes */}
       <Route
@@ -140,8 +153,23 @@ function App() {
           </ProtectedRoute>
         } 
       />
-      <Route path="/internship/:id/task/:taskId" element={<SimulationTaskPage />} />
-      <Route path="/progress" element={<ProgressPage />} />
+     <Route 
+      path="/internship/:id/task/:taskId" 
+      element={
+         <ProtectedRoute>
+            <SimulationTaskPage />
+         </ProtectedRoute>
+      } 
+      />
+           <Route  
+             path="/progress" 
+             element={
+               <ProtectedRoute>
+                 <ProgressPage />
+               </ProtectedRoute>
+             }
+           />
+
       <Route 
         path="/ats-scanner" 
         element={

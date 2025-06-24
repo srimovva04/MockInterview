@@ -29,7 +29,8 @@ const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-800 text-white">
       <Sidebar setActiveTab={setActiveTab} activeTab={activeTab} />
-      <div className="flex-1 p-6">
+       <div className="flex-1 ml-64 overflow-y-auto p-8">
+
         {activeTab === "Add Question Bank" && <AddQuestionBank />}
         {/* add more tab conditions here if needed */}
         {/* {activeTab === "Add Entries" && <AddEntries />} */}

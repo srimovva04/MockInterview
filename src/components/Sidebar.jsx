@@ -97,7 +97,7 @@ const Sidebar = () => {
       icon: PlusCircle,
       label: "Add Question Bank",
       active: true,
-      path: "/add-question-bank",
+      path: "/admin",
     },
     {
       icon: ClipboardList,
@@ -105,6 +105,13 @@ const Sidebar = () => {
       active: false,
       path: "/add-entries",
     },
+    {
+      icon: GraduationCap,
+      label: "Add Internship",
+      active: false,
+      path: "/edit-internship",
+    },
+
     { icon: Settings, label: "Manage App", active: false, path: "/manage-app" },
   ];
   const tools = [
