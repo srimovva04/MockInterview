@@ -40,6 +40,7 @@ import Signin from "./components/Auth/signin";
 import Signup from "./components/Auth/signup";
 import ProtectedRoute from "./components/protectedRoute";
 import { UserAuth } from "./components/Auth/AuthContext";
+import UpdatePassword from "./components/Auth/UpdatePassword";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
 import ATSChecker from "./components/ATSChecker"; // Adjust path if needed
@@ -62,6 +63,7 @@ function App() {
       <Route path="/" element={<Navigate to="/signup" replace />} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/update-password" element={<UpdatePassword />} />
       <Route
         path="/admin"
         element={
