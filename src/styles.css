@@ -4,15 +4,12 @@ html {
   scroll-behavior: smooth;
 }
 
-
 @theme {
   --btn-bg: theme(colors.blue.500);
   --btn-bg-hover: theme(colors.blue.600);
   --btn-text: white;
   --btn-radius: 0.5rem;
   --btn-font-weight: 500;
-
-  /* Default (md) */
   --btn-padding-y: 0.75rem;
   --btn-padding-x: 1.5rem;
   --btn-font-size: 0.875rem;
@@ -22,8 +19,6 @@ html {
   background: radial-gradient(circle at center, #a1c4fd 0%, #ffffff 100%);
 }
 
-
-/* Base button style */
 .button {
   @apply inline-flex items-center justify-center transition-colors;
   background-color: var(--btn-bg);
@@ -34,12 +29,10 @@ html {
   font-size: var(--btn-font-size);
 }
 
-/* Hover */
 .button:hover {
   background-color: var(--btn-bg-hover);
 }
 
-/* Size Variants */
 .button-sm {
   @apply text-sm;
   padding: 0.5rem 1rem;
@@ -56,4 +49,103 @@ html {
   @apply text-lg;
   padding: 1rem 2rem;
   font-size: 1rem;
+}
+
+/* Background bubbles animation */
+.animated-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(173, 216, 230, 0.3);
+  box-shadow: 0 0 10px rgba(173, 216, 230, 0.5);
+  opacity: 0.6;
+  animation: float 20s infinite ease-in-out;
+}
+
+.bubble1 {
+  width: 80px;
+  height: 80px;
+  left: 20%;
+  bottom: -120px;
+  animation-delay: 0s;
+  animation-duration: 25s;
+}
+
+.bubble2 {
+  width: 50px;
+  height: 50px;
+  left: 70%;
+  bottom: -100px;
+  animation-delay: 4s;
+  animation-duration: 20s;
+}
+
+.bubble3 {
+  width: 100px;
+  height: 100px;
+  left: 45%;
+  bottom: -140px;
+  animation-delay: 2s;
+  animation-duration: 30s;
+}
+
+.bubble4 {
+  width: 60px;
+  height: 60px;
+  left: 10%;
+  bottom: -90px;
+  animation-delay: 1s;
+  animation-duration: 22s;
+}
+
+.bubble5 {
+  width: 70px;
+  height: 70px;
+  left: 85%;
+  bottom: -130px;
+  animation-delay: 3s;
+  animation-duration: 24s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) scale(1);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1.2);
+    opacity: 0;
+  }
+}
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-out {
+  animation: fadeInOut 2s ease-in-out;
+}
+
+.input-style {
+  @apply w-full mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-gray-800 placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400;
 }

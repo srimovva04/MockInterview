@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { UserAuth } from "./AuthContext";
+import { UserAuth } from "./Auth/AuthContext";
 
 // const ProtectedRoute = ({ children }) => {
 //   const { session } = UserAuth();
@@ -14,7 +14,7 @@ import { UserAuth } from "./AuthContext";
 
 // export default ProtectedRoute;
 
- const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children }) => {
   const { session } = UserAuth();
   console.log("ProtectedRoute - session:", session); // 🟡 Add this
 

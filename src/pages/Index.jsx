@@ -3,15 +3,13 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import MockInterviewDashboard from "../components/MockInterviewDashboard";
 import OnboardingBanner from "../components/OnboardingBanner";
-import Signin from "../components/signin";
-import Signup from "../components/signup";
+import Signin from "../components/Auth/signin";
+import Signup from "../components/Auth/signup";
 import AdminDashboard from "../components/AdminDashboard";
 
 const Index = () => {
   return (
-    <div
-      className="min-h-screen bg-radial-blue"
-    >
+    <div className="min-h-screen bg-radial-blue">
       <div className="flex h-full">
         {/* Fixed width for sidebar to avoid it getting hidden */}
         <div className="fixed top-0 left-0 h-screen w-64 z-10">
@@ -28,8 +26,6 @@ const Index = () => {
 };
 
 export default Index;
-
-
 
 // import React from "react";
 // import Header from "../components/Header";
@@ -61,4 +57,3 @@ export default Index;
 // };
 
 // export default Index;
-

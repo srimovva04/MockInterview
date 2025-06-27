@@ -31,15 +31,15 @@
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
-import './styles.css';
+import "./styles.css";
 import VideoCallContent from "./components/mock/VideoCallContent";
 import PracticingQuestions from "./components/practicing_questions/PracticingQuestions";
 import JobReadinessAssessment from "./components/job_readiness/JobReadinessAssessment";
 import Feedback from "./components/job_readiness/Feedback";
-import Signin from "./components/signin";
-import Signup from "./components/signup";
+import Signin from "./components/Auth/signin";
+import Signup from "./components/Auth/signup";
 import ProtectedRoute from "./components/protectedRoute";
-import { UserAuth } from "./components/AuthContext";
+import { UserAuth } from "./components/Auth/AuthContext";
 import AdminDashboard from "./components/AdminDashboard";
 import InterviewReminder from "./components/mock/InterviewReminder";
 import ATSChecker from "./components/ATSChecker"; // Adjust path if needed
@@ -48,12 +48,11 @@ import InternshipDashboard from "./components/internship/InternshipDashboard";
 import SimulationDetail from "./components/internship/SimulationDetail";
 import SimulationTaskPage from "./components/internship/SimulationTaskPage";
 import ProgressPage from "./components/internship/ProgressPage";
-import ATSScanner from "./components/ATSChecker"; 
+import ATSScanner from "./components/ATSChecker";
 import ScanResults from "./components/ScanResults";
 
 import AddInternship from "./components/admin/AddInternship";
 import SimulationsManager from "./components/admin/SimulationsManager";
-
 
 function App() {
   const { session } = UserAuth();
@@ -72,15 +71,15 @@ function App() {
         }
       />
       <Route
-              path="/add-internship"
-              element={
-                <ProtectedRoute>
-                  <AddInternship />
-                </ProtectedRoute>
-              }
-            />    
-            <Route path="/edit-internship" element={<SimulationsManager />} />
-            <Route path="/edit-internship/:id" element={<SimulationsManager />} />
+        path="/add-internship"
+        element={
+          <ProtectedRoute>
+            <AddInternship />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/edit-internship" element={<SimulationsManager />} />
+      <Route path="/edit-internship/:id" element={<SimulationsManager />} />
 
       {/* Protected Routes */}
       <Route
@@ -125,7 +124,6 @@ function App() {
         }
       />
       <Route path="/ats-checker" element={<ATSChecker />} />
-      
 
       <Route
         path="/preparation-hub"
@@ -136,60 +134,56 @@ function App() {
         }
       />
 
-      <Route 
+      <Route
         path="/internship"
         element={
           <ProtectedRoute>
-            <InternshipDashboard/>
+            <InternshipDashboard />
           </ProtectedRoute>
         }
       />
-      
-      <Route 
-        path="/simulation/:id" 
-        element={
-          <ProtectedRoute>
-            <SimulationDetail />
-          </ProtectedRoute>
-        } 
-      />
-     <Route 
-      path="/internship/:id/task/:taskId" 
-      element={
-         <ProtectedRoute>
-            <SimulationTaskPage />
-         </ProtectedRoute>
-      } 
-      />
-           <Route  
-             path="/progress" 
-             element={
-               <ProtectedRoute>
-                 <ProgressPage />
-               </ProtectedRoute>
-             }
-           />
 
-      <Route 
-        path="/ats-scanner" 
+      <Route
+        path="/simulation/:id"
         element={
           <ProtectedRoute>
             <SimulationDetail />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/results" 
+      <Route
+        path="/internship/:id/task/:taskId"
+        element={
+          <ProtectedRoute>
+            <SimulationTaskPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/progress"
+        element={
+          <ProtectedRoute>
+            <ProgressPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/ats-scanner"
+        element={
+          <ProtectedRoute>
+            <SimulationDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/results"
         element={
           <ProtectedRoute>
             <ScanResults />
           </ProtectedRoute>
         }
       />
-
-
-
-
     </Routes>
   );
 }
