@@ -30,101 +30,7 @@ export async function fetchTasksForSimulation(simulationId) {
   return data;
 }
 
-// export const getTasksWithUserProgress = async (simulationId, userId) => {
-//   const { data: tasks, error } = await supabase
-//     .from('tasks')
-//     .select(`
-//       *,
-//       user_task_progress(status)
-//     `)
-//     .eq('simulation_id', simulationId)
-//     .order('id', { ascending: true });
 
-//   if (error) {
-//     console.error('Error loading tasks:', error);
-//     return [];
-//   }
-
-//   return tasks.map(task => ({
-//     ...task,
-//     status: task.user_task_progress?.[0]?.status || 'not_started'
-//   }));
-// };
-
-
-
-// export const useProgressTracker = (userId) => {
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-
-//   const initializeSimulation = async (simulationId) => {
-//     if (!userId) return;
-    
-//     setLoading(true);
-//     setError(null);
-    
-//     try {
-//       const result = await ProgressTracker.initializeSimulationProgress(userId, simulationId);
-//       if (!result.success) {
-//         setError(result.error);
-//       }
-//       return result;
-//     } catch (err) {
-//       setError(err.message);
-//       return { success: false, error: err.message };
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const updateTaskProgress = async (taskId, status, simulationId = null) => {
-//     if (!userId) return;
-    
-//     setLoading(true);
-//     setError(null);
-    
-//     try {
-//       const result = await ProgressTracker.updateTaskProgress(userId, taskId, status, simulationId);
-//       if (!result.success) {
-//         setError(result.error);
-//       }
-//       return result;
-//     } catch (err) {
-//       setError(err.message);
-//       return { success: false, error: err.message };
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const getSimulationProgress = async (simulationId) => {
-//     if (!userId) return [];
-    
-//     setLoading(true);
-//     setError(null);
-    
-//     try {
-//       const progress = await ProgressTracker.getSimulationProgress(userId, simulationId);
-//       return progress;
-//     } catch (err) {
-//       setError(err.message);
-//       return [];
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return {
-//     loading,
-//     error,
-//     initializeSimulation,
-//     updateTaskProgress,
-//     getSimulationProgress
-//   };
-// };
-
-// Example of what your updateTaskProgress function should look like
-// Simple approach without upsert - replace your updateTaskProgress function
 export const updateTaskProgress = async (userId, simulationId, taskId, status) => {
   try {
     console.log('Updating task progress:', { userId, simulationId, taskId, status });
@@ -229,3 +135,5 @@ export async function getTasksWithUserProgress(simulationId, userId) {
     return [];
   }
 }
+
+

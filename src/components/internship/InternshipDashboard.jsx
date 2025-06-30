@@ -7,7 +7,7 @@ import { fetchSimulations } from '../utils/simulations';
 const InternshipDashboard = () => {
   const [simulations, setSimulations] = useState([]);
   const [careerFilter, setCareerFilter] = useState('All');
-  const [companyFilter, setCompanyFilter] = useState('All');
+
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -23,11 +23,21 @@ const InternshipDashboard = () => {
     loadSimulations();
   }, []);
 
+
+
+  const uniqueCategories = ['All', ...new Set(simulations.map(sim => sim.category))];
+
   const filteredSimulations = simulations.filter((sim) => {
     const matchesCareer = careerFilter === 'All' || sim.category === careerFilter;
-    const matchesCompany = companyFilter === 'All' || sim.company === companyFilter;
-    return matchesCareer && matchesCompany;
+    return matchesCareer;
   });
+
+
+
+  // const filteredSimulations = simulations.filter((sim) => {
+  //   const matchesCareer = careerFilter === 'All' || sim.category === careerFilter;
+  //   return matchesCareer;
+  // });
 
   return (
     <div className="flex h-screen overflow-hidden bg-radial-blue">
@@ -55,31 +65,34 @@ const InternshipDashboard = () => {
         <div className="mb-12 px-4">
           <div className="flex flex-col sm:flex-row sm:items-end gap-6">
             {/* Career Filter */}
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Career Interest</label>
-              <select
-                value={careerFilter}
-                onChange={(e) => setCareerFilter(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-              >
-                {['All', 'Data', 'Consulting', 'Technology', 'Finance'].map((option) => (
-                  <option key={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Company Filter */}
-            <div className="flex-1 min-w-[200px]">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-              <select
-                value={companyFilter}
-                onChange={(e) => setCompanyFilter(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-              >
-                {['All', 'Tata Group', 'Microsoft', 'Google', 'Amazon'].map((option) => (
-                  <option key={option}>{option}</option>
-                ))}
-              </select>
+            <div className="w-full sm:w-[300px]">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
+                Career Interest
+              </label>
+              <div className="relative">
+                <select
+                  value={careerFilter}
+                  onChange={(e) => setCareerFilter(e.target.value)}
+                  className="w-full appearance-none border border-gray-300 rounded-lg px-4 py-2 pr-10 bg-white text-gray-900 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-150 ease-in-out hover:border-gray-400"
+                >
+                  {uniqueCategories.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                  <svg
+                    className="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -108,139 +121,3 @@ const InternshipDashboard = () => {
 export default InternshipDashboard;
 
 
-
-
-// import React, { useState } from 'react';
-// import SimulationCard from './SimulationCard'; 
-// import Sidebar from '../Sidebar';
-
-// const InternshipDashboard = () => {
-//   const [careerFilter, setCareerFilter] = useState('All');
-//   const [companyFilter, setCompanyFilter] = useState('All');
-
-//   // const simulations = [
-//   //   {
-//   //     id: 1,
-//   //     company: 'Tata Group',
-//   //     category: 'Data',
-//   //     title: 'Data Science: Unlocking Business Insights with Advanced Analytics',
-//   //     difficulty: 'Intermediate',
-//   //     duration: '3-4 hours',
-//   //     image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=250&fit=crop',
-//   //     isNew: false,
-//   //   },
-//   //   {
-//   //     id: 2,
-//   //     company: 'Tata Group',
-//   //     category: 'Data',
-//   //     title: 'GenAI: Revolutionizing Data Analytics and Intelligent Automation',
-//   //     difficulty: 'Intermediate',
-//   //     duration: '3-4 hours',
-//   //     image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=250&fit=crop',
-//   //     isNew: true,
-//   //   },
-//   //   {
-//   //     id: 3,
-//   //     company: 'Tata Group',
-//   //     category: 'Technology',
-//   //     title: 'Web Development: Building Responsive and Dynamic Applications',
-//   //     difficulty: 'Beginner',
-//   //     duration: '4-5 hours',
-//   //     image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=250&fit=crop',
-//   //     isNew: false,
-//   //   },
-//   //   {
-//   //     id: 4,
-//   //     company: 'Tata Group',
-//   //     category: 'Technology',
-//   //     title: 'App Development: Designing User-Centric Mobile Experiences',
-//   //     difficulty: 'Beginner',
-//   //     duration: '3-5 hours',
-//   //     image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=250&fit=crop',
-//   //     isNew: true,
-//   //   },
-//   //   {
-//   //     id: 5,
-//   //     company: 'Tata Group',
-//   //     category: 'Data',
-//   //     title: 'Data Analytics: Transforming Data into Strategic Decisions',
-//   //     difficulty: 'Intermediate',
-//   //     duration: '3-4 hours',
-//   //     image: 'https://images.unsplash.com/photo-1591696205602-2f950c417cb9?w=400&h=250&fit=crop',
-//   //     isNew: false,
-//   //   },
-//   // ];
-
-//   const filteredSimulations = simulations.filter((sim) => {
-//     const matchesCareer = careerFilter === 'All' || sim.category === careerFilter;
-//     const matchesCompany = companyFilter === 'All' || sim.company === companyFilter;
-//     return matchesCareer && matchesCompany;
-//   });
-
-//   return (
-//     <div className="flex h-screen overflow-hidden bg-radial-blue">
-//       <Sidebar />
-//       <div className="flex-1 ml-64 overflow-y-auto p-8">
-//         {/* Header */}
-//         <div className="text-center mb-12 px-4">
-//           <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 mb-4">
-//             Explore Job Simulations
-//           </h1>
-//           <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
-//             Discover hands-on job simulations and short courses to <span className="text-blue-800 font-medium">build real-world skills</span>, boost your resume, and get noticed by top recruiters.
-//           </p>
-//         </div>
-
-//         {/* Filters */}
-//         <div className="mb-12 px-4">
-//           <div className="flex flex-col sm:flex-row sm:items-end gap-6">
-//             {/* Career Filter */}
-//             <div className="flex-1 min-w-[200px]">
-//               <label className="block text-sm font-medium text-gray-700 mb-1">Career Interest</label>
-//               <select
-//                 value={careerFilter}
-//                 onChange={(e) => setCareerFilter(e.target.value)}
-//                 className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-//               >
-//                 {['All', 'Data', 'Consulting', 'Technology', 'Finance'].map((option) => (
-//                   <option key={option}>{option}</option>
-//                 ))}
-//               </select>
-//             </div>
-
-//             {/* Company Filter */}
-//             <div className="flex-1 min-w-[200px]">
-//               <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-//               <select
-//                 value={companyFilter}
-//                 onChange={(e) => setCompanyFilter(e.target.value)}
-//                 className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-//               >
-//                 {['All', 'Tata Group', 'Microsoft', 'Google', 'Amazon'].map((option) => (
-//                   <option key={option}>{option}</option>
-//                 ))}
-//               </select>
-//             </div>
-//           </div>
-//         </div>
-
-
-//         {/* Simulations Grid */}
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-//           {filteredSimulations.length > 0 ? (
-//             filteredSimulations.map((simulation) => (
-//               <SimulationCard key={simulation.id} simulation={simulation} />
-//             ))
-//           ) : (
-//             <p className="text-gray-500 col-span-full text-center">
-//               No simulations match your filters.
-//             </p>
-//           )}
-//         </div>
-        
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default InternshipDashboard;
