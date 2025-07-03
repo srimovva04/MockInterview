@@ -109,20 +109,21 @@ const TaskItem = ({ task, number, onClick, simulationId  }) => {
           </div>
         </div>
 
-        {task.status === "in_progress" && (
+        {(task.status === "in_progress" || task.confirmation_status === "rejected") && (
           <div
             className="flex items-center gap-2 text-blue-600 font-medium"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/internship/${simulationId}/task/${number}`);
-
-                }}
-
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/internship/${simulationId}/task/${number}`);
+            }}
           >
-            <span className="text-sm">Continue</span>
+            <span className="text-sm">
+              {task.confirmation_status === "rejected" ? "Redo" : "Continue"}
+            </span>
             <ArrowRight className="w-4 h-4 animate-pulse" />
           </div>
         )}
+
       </div>
     );
 

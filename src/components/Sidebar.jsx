@@ -106,6 +106,12 @@ const Sidebar = () => {
       path: "/add-entries",
     },
     {
+      icon: Check,
+      label: "Task Confirmation",
+      active: false,
+      path: "/confirmation",
+    },
+    {
       icon: GraduationCap,
       label: "Add Internship",
       active: false,

@@ -192,14 +192,15 @@ const SimulationTaskPage = () => {
           status: 'not_started',
           confirmation_status: null,
           updated_at: null,
-          uploaded_work_url: null
+          uploaded_work_url: null,
+          comment: progress?.comment || null,
         }));
       }
 
       console.log('Fetching progress for user:', currentUser.id);
       const { data: progressData, error: progressError } = await supabase
         .from("user_task_progress")
-        .select("task_id, status, updated_at, confirmation_status, uploaded_work_url")
+        .select("task_id, status, updated_at, confirmation_status, uploaded_work_url,comment")
         .eq("user_id", currentUser.id)
         .eq("simulation_id", simulationId);
 
@@ -235,7 +236,8 @@ const SimulationTaskPage = () => {
           status: progress?.status || 'not_started',
           confirmation_status: progress?.confirmation_status || null,
           uploaded_work_url: progress?.uploaded_work_url || null,
-          updated_at: progress?.updated_at || null
+          updated_at: progress?.updated_at || null,
+          comment: progress?.comment || null, 
         };
       });
 
@@ -300,8 +302,9 @@ const SimulationTaskPage = () => {
               status: 'completed',
               confirmation_status: 'pending',
               uploaded_work_url: uploadUrl,
-              updated_at: new Date().toISOString()
-            }
+              updated_at: new Date().toISOString(),
+              comment:null,
+            } 
           : task
       )
     );
@@ -442,7 +445,7 @@ const SimulationTaskPage = () => {
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{currentTask.title}</h1>
-            {currentTask.status === 'completed' && (
+            {/* {currentTask.status === 'completed' && (
               <div className="flex items-center gap-2 text-green-600 font-medium mt-1">
                 <Check size={16} />
                 <span className="text-sm">Task Completed</span>
@@ -451,8 +454,59 @@ const SimulationTaskPage = () => {
                     Pending Review
                   </span>
                 )}
+
+                {currentTask.confirmation_status === 'accepted' && (
+                  <span className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full ml-2">
+                    Accepted
+                  </span>
+                )}
+
+                {currentTask.confirmation_status === 'rejected' && (
+                  <span className="text-xs text-red-700 bg-red-100 px-2 py-1 rounded-full ml-2">
+                    Rejected
+                  </span>
+                )}
+                {(currentTask.confirmation_status === 'rejected' || currentTask.confirmation_status === 'accepted') && currentTask.comment && (
+                  <p className="text-sm text-gray-700 mt-2 italic">
+                    Feedback: {currentTask.comment}
+                  </p>
+                )}
+
+
               </div>
-            )}
+            )} */}
+
+            {currentTask.status === 'completed' && (
+  <>
+    <div className="flex items-center gap-2 text-green-600 font-medium mt-1">
+      <Check size={16} />
+      <span className="text-sm">Task Completed</span>
+      {currentTask.confirmation_status === 'pending' && (
+        <span className="text-xs text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full ml-2">
+          Pending Review
+        </span>
+      )}
+      {currentTask.confirmation_status === 'accepted' && (
+        <span className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full ml-2">
+          Accepted
+        </span>
+      )}
+      {currentTask.confirmation_status === 'rejected' && (
+        <span className="text-xs text-red-700 bg-red-100 px-2 py-1 rounded-full ml-2">
+          Rejected
+        </span>
+      )}
+    </div>
+
+    {(currentTask.confirmation_status === 'rejected' || currentTask.confirmation_status === 'accepted') &&
+      currentTask.comment && (
+        <p className="text-sm text-gray-700 mt-2 italic">
+          Feedback: {currentTask.comment}
+        </p>
+    )}
+  </>
+)}
+
           </div>
 
           {currentTask.material_url && (

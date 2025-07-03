@@ -77,7 +77,8 @@ export const updateTaskProgress = async (userId, simulationId, taskId, status) =
           simulation_id: simulationId,
           task_id: taskId,
           status: status,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          comment: null,
         })
         .select()
         .single();

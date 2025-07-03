@@ -54,6 +54,7 @@ import ScanResults from "./components/ScanResults";
 
 import AddInternship from "./components/admin/AddInternship";
 import SimulationsManager from "./components/admin/SimulationsManager";
+import Confirmation from "./components/admin/Confirmation";
 
 function App() {
   const { session } = UserAuth();
@@ -73,6 +74,14 @@ function App() {
         }
       />
       <Route
+        path="/confirmation"
+        element={
+          <ProtectedRoute>
+            <Confirmation/>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/add-internship"
         element={
           <ProtectedRoute>
@@ -80,8 +89,22 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route path="/edit-internship" element={<SimulationsManager />} />
-      <Route path="/edit-internship/:id" element={<SimulationsManager />} />
+      <Route 
+        path="/edit-internship" 
+        element={
+          <ProtectedRoute> 
+            <SimulationsManager />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/edit-internship/:id" 
+        element={
+          <ProtectedRoute>
+            <SimulationsManager />
+          </ProtectedRoute>
+        } 
+      />
 
       {/* Protected Routes */}
       <Route

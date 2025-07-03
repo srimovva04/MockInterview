@@ -24,7 +24,11 @@ const WorkUpload = ({ task, onUploadSuccess, isUploading, setIsUploading, curren
   };
 
   const handleUpload = async () => {
-    if (task.status === 'completed') {
+    // if (task.status === 'completed') {
+    //   setUploadError('This task has already been submitted.');
+    //   return;
+    // }
+    if (task.status === 'completed' && task.confirmation_status !== 'rejected') {
       setUploadError('This task has already been submitted.');
       return;
     }
@@ -80,7 +84,8 @@ const WorkUpload = ({ task, onUploadSuccess, isUploading, setIsUploading, curren
           status: 'completed',
           confirmation_status: 'pending',
           uploaded_work_url: publicUrl,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          comment:null,
         }, {
           onConflict: 'user_id,task_id'
         });
@@ -163,10 +168,18 @@ const WorkUpload = ({ task, onUploadSuccess, isUploading, setIsUploading, curren
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Select file to upload
           </label>
+          
+          {task.confirmation_status === 'rejected' && (
+            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-2 rounded-md text-sm mb-4">
+              Your previous submission was <strong>rejected</strong>. Please review the feedback and re-upload your work.
+            </div>
+          )}
+
           <input
             type="file"
             onChange={handleFileSelect}
-            disabled={isUploading || task.status === 'completed'}
+            // disabled={isUploading || task.status === 'completed'}
+            disabled={isUploading || (task.status === 'completed' && task.confirmation_status !== 'rejected')}
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             accept=".pdf,.doc,.docx,.txt,.zip,.rar,.jpg,.jpeg,.png,.mp4,.mov,.avi"
           />
@@ -196,7 +209,8 @@ const WorkUpload = ({ task, onUploadSuccess, isUploading, setIsUploading, curren
 
         <button
           onClick={handleUpload}
-          disabled={!selectedFile || isUploading || task.status === 'completed'}
+          // disabled={!selectedFile || isUploading || task.status === 'completed'}
+          disabled={!selectedFile || isUploading || (task.status === 'completed' && task.confirmation_status !== 'rejected')}
           className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium text-sm transition-all ${
             !selectedFile || isUploading
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
