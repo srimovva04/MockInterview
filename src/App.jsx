@@ -55,6 +55,7 @@ import ScanResults from "./components/ScanResults";
 import AddInternship from "./components/admin/AddInternship";
 import SimulationsManager from "./components/admin/SimulationsManager";
 import Confirmation from "./components/admin/Confirmation";
+import ResumeBuilder from "./components/resume_builder/ResumeBuilder";
 
 function App() {
   const { session } = UserAuth();
@@ -209,7 +210,15 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route 
+        path="/resume"
+        element={
+          <ResumeBuilder/>
+        }
+      
+      />
     </Routes>
+    
   );
 }
 
