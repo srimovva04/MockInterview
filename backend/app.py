@@ -40,12 +40,28 @@ from flask import Flask, request, jsonify
 import os
 from resume_parser import extract_text_from_pdf
 from match_gemini import match_skills
-
-app = Flask(__name__)
-# CORS(app, origins="http://localhost:5174")  # ✅ Allow Vite
+from werkzeug.utils import secure_filename 
+import secrets
 from flask_cors import CORS
 
-CORS(app, supports_credentials=True, origins="*")
+app = Flask(__name__)
+# 🔐 Secret key for sessions (required even if you don't use sessions yet)
+app.secret_key = secrets.token_hex(16)
+
+# 🔐 Secure session cookie settings
+app.config.update(
+    SESSION_COOKIE_SECURE=True,       # Only send cookies over HTTPS
+    SESSION_COOKIE_HTTPONLY=True,     # JS can’t access cookies
+    SESSION_COOKIE_SAMESITE='Lax'     # Avoid CSRF in most common cases
+)
+
+# CORS(app, supports_credentials=True, origins="*")
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+
+ALLOWED_EXTENSIONS = {'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -56,9 +72,12 @@ def upload_resume():
         return jsonify({'error': 'No file uploaded'}), 400
 
     file = request.files['file']
+    if not allowed_file(file.filename):
+        return jsonify({'error': 'Only PDF files are allowed'}), 400
     job_description = request.form.get('job_description', 'Software Developer')
 
-    filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+    filename = secure_filename(file.filename)  # ✅ this sanitizes the name
+    filepath = os.path.join(UPLOAD_FOLDER, filename)
     file.save(filepath)
 
     resume_text = extract_text_from_pdf(filepath)
