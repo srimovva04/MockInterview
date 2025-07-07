@@ -1,9 +1,13 @@
-import google.generativeai as genai
 import os
-# AIzaSyCC6fOTV4VbSsKeb3oAnojXHgFTqK8a-vo
-# Set your Gemini API key
-# genai.configure(api_key="AIzaSyB3gn3C1op14AqdTdzj4mne2UAbM2Pq_uA")
-genai.configure(api_key="AIzaSyCC6fOTV4VbSsKeb3oAnojXHgFTqK8a-vo")
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+# Locate and load the .env (it walks up parent dirs, so you can keep .env in the repo root)
+load_dotenv()
+
+# The client will now pick it up automatically, *or* you can pass it explicitly
+api_key = os.getenv("GEMINI_API_KEY")          # returns None if not found
+genai.configure(api_key=api_key)
 
 def match_skills(resume_text, job_description):
     prompt = f"""
@@ -34,3 +38,10 @@ Skills Matched: <list of skills>
         return score, matched_skills
     except:
         return 0, "Parsing error in Gemini response"
+    
+
+
+# from dotenv import load_dotenv
+# load_dotenv()
+
+# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
