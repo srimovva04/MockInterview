@@ -18,15 +18,24 @@ export const PersonalInfoForm = ({ data, onChange }) => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-[#374151] mb-1">Address</label>
+        <label className="block text-sm font-medium text-[#374151] mb-1">City</label>
         <input
           className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={data.address}
-          onChange={(e) => handleChange('address', e.target.value)}
-          placeholder="123 Street Name, City, State 12345"
+          value={data.city}
+          onChange={(e) => handleChange('city', e.target.value)}
+          placeholder="Mumbai"
         />
       </div>
 
+<div>
+        <label className="block text-sm font-medium text-[#374151] mb-1">Country</label>
+        <input
+          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={data.country}
+          onChange={(e) => handleChange('country', e.target.value)}
+          placeholder="India"
+        />
+      </div>
       <div>
         <label className="block text-sm font-medium text-[#374151] mb-1">Phone Number</label>
         <input

@@ -55,6 +55,7 @@ import ScanResults from "./components/ScanResults";
 import AddInternship from "./components/admin/AddInternship";
 import SimulationsManager from "./components/admin/SimulationsManager";
 import Confirmation from "./components/admin/Confirmation";
+import LandingPage from "./components/resume_builder/LandingPage";
 import ResumeBuilder from "./components/resume_builder/ResumeBuilder";
 
 function App() {
@@ -215,8 +216,8 @@ function App() {
         element={
           <ResumeBuilder/>
         }
-      
       />
+      <Route path="/land" element={<LandingPage />} />
     </Routes>
     
   );

@@ -1,18 +1,23 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import html2pdf from "html2pdf.js";
-import {PersonalInfoForm,EducationForm, EmploymentForm,ProjectsForm , SkillsForm}from "./forms.jsx";
+import { PersonalInfoForm, EducationForm, EmploymentForm, ProjectsForm, SkillsForm } from "./forms.jsx";
+import { useEffect } from "react";
 
 const ResumeBuilder = () => {
+  const location = useLocation();
+  const parsed = location.state?.parsedData;
   const [tab, setTab] = useState("Personal");
   const [resumeData, setResumeData] = useState({
     personalInfo: {
-      name: "",
-      address: "",
-      phone: "",
-      email: "",
-    },
+  name: "",
+  city: "",
+  country: "",
+  phone: "",
+  email: "",
+},
     education: {
       degree: "",
       gpa: "",
@@ -29,7 +34,19 @@ const ResumeBuilder = () => {
       tools: [],
     },
   });
-
+useEffect(() => {
+  if (parsed) {
+    setResumeData((prev) => ({
+      ...prev,
+      personalInfo: { ...prev.personalInfo, ...parsed.personalInfo },
+      education: { ...prev.education, ...parsed.education },
+      skills: { ...prev.skills, ...parsed.skills },
+      employment: parsed.employment || [],
+      projects: parsed.projects || [],
+      additionalExperience: parsed.additionalExperience || [],
+    }));
+  }
+}, [parsed]);
   const resumeRef = useRef();
   const tabs = ["Personal", "Education", "Work", "Projects", "Skills"];
 
@@ -48,6 +65,37 @@ const ResumeBuilder = () => {
     }
   };
 
+  // Add this handler inside ResumeBuilder component
+  const handleFileUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append('resume', file);
+
+  try {
+    const res = await fetch('http://localhost:5000/api/parse-resume', {
+      method: 'POST',
+      body: formData
+    });
+    if (!res.ok) throw new Error('Failed to parse resume');
+    const parsed = await res.json();
+
+    // Merge safely with defaults
+    setResumeData((prev) => ({
+  ...prev,
+  personalInfo: { ...prev.personalInfo, ...parsed.personalInfo },
+  education: { ...prev.education, ...parsed.education },
+  skills: { ...prev.skills, ...parsed.skills },
+  employment: parsed.employment || [],
+  projects: parsed.projects || [],
+  additionalExperience: parsed.additionalExperience || [],
+}));
+
+  } catch (err) {
+    alert('Resume parsing failed.');
+  }
+};
+
   return (
     <div className="flex flex-col lg:flex-row gap-8 p-6 bg-[#f9fafb] min-h-screen">
       <div className="lg:w-1/2 space-y-6">
@@ -61,6 +109,7 @@ const ResumeBuilder = () => {
           </button>
         </div>
 
+        
         <div className="bg-white rounded-lg shadow-sm p-1">
           <div className="flex gap-1">
             {tabs.map((t) => (
@@ -80,7 +129,7 @@ const ResumeBuilder = () => {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6">
-             {tab === "Personal" && (
+          {tab === "Personal" && (
             <PersonalInfoForm
               data={resumeData.personalInfo}
               onChange={(d) =>
@@ -142,9 +191,12 @@ const ResumeBuilder = () => {
                 {resumeData.personalInfo.name || "Your Name"}
               </h1>
               <div className="text-xs mt-1 text-[#374151]">
-                {resumeData.personalInfo.address && (
-                  <p>{resumeData.personalInfo.address}</p>
-                )}
+                {(resumeData.personalInfo.city || resumeData.personalInfo.country) && (
+  <p>
+    {[resumeData.personalInfo.city, resumeData.personalInfo.country].filter(Boolean).join(", ")}
+  </p>
+)}
+
                 {(resumeData.personalInfo.phone || resumeData.personalInfo.email) && (
                   <p>
                     {resumeData.personalInfo.phone}
@@ -157,7 +209,7 @@ const ResumeBuilder = () => {
 
             {/* Other sections (Employment, Education, etc.) remain unchanged but should also use safe hex values if styled */}
 
-          {/* Employment Section */}
+            {/* Employment Section */}
             {resumeData.employment.length > 0 && (
               <Section title="Employment">
                 {resumeData.employment.map((emp) => (
