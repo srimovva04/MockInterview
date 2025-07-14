@@ -35,14 +35,17 @@
 # if __name__ == '__main__':
 #     app.run(port=5000, debug=True)
 
-
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,send_file
 import os
 from resume_parser import extract_text_from_pdf
 from match_gemini import match_skills
 from werkzeug.utils import secure_filename 
 import secrets
 from flask_cors import CORS
+from utils import generate_latex, compile_latex_to_pdf
+import io
+from flask import make_response
+from gemini_resume_builder_helper import refine_bullet_points, refine_text_field
 
 app = Flask(__name__)
 # 🔐 Secret key for sessions (required even if you don't use sessions yet)
@@ -56,7 +59,9 @@ app.config.update(
 )
 
 # CORS(app, supports_credentials=True, origins="*")
-CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+# CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+
 
 ALLOWED_EXTENSIONS = {'pdf'}
 
@@ -91,6 +96,63 @@ def upload_resume():
         'score': score,
         'matched_skills': matched_skills
     })
+
+
+@app.route("/compile", methods=["POST"])
+def compile_resume():
+    try:
+        data = request.json
+
+        # ✅ Limit project and education count
+        data['projects'] = data['projects'][:4]
+        data['education'] = data['education'][:2]
+
+
+        # ✅ Refine personal details
+        for key in ['address', 'city_state_zip', 'phone', 'email', 'about']:
+            data['personal'][key] = refine_text_field(data['personal'].get(key, ""), field_name=f"Personal - {key}")
+
+        # ✅ Refine experience
+        for exp in data.get('experience', []):
+            for field in ['title', 'company', 'dates']:
+                exp[field] = refine_text_field(exp.get(field, ""), field_name=f"Experience - {field}")
+            exp['bullets'] = refine_bullet_points(exp.get('bullets', []), section_name="Experience")
+
+        # ✅ Refine education
+        for edu in data.get('education', []):
+            for field in ['institution', 'location', 'dates']:
+                edu[field] = refine_text_field(edu.get(field, ""), field_name=f"Education - {field}")
+            edu['details'] = refine_bullet_points(edu.get('details', []), section_name="Education")
+
+        # ✅ Refine projects
+        for proj in data.get('projects', []):
+            for field in ['name', 'year']:
+                proj[field] = refine_text_field(proj.get(field, ""), field_name=f"Project - {field}")
+            proj['bullets'] = refine_bullet_points(proj.get('bullets', []), section_name="Project")
+
+        # ✅ Refine tech/skills
+        data['technologies'] = [refine_text_field(tech, "Technology") for tech in data.get('technologies', [])]
+        data['skills'] = refine_text_field(data.get('skills', ""), "Skills")
+
+        latex = generate_latex(data)
+
+        pdf = compile_latex_to_pdf(latex)
+        print("[DEBUG] Compiled PDF:", "Success" if pdf else "Failed")
+
+        if pdf:
+            response = make_response(pdf)
+            response.headers.set("Content-Type", "application/pdf")
+            response.headers.set("Content-Disposition", "attachment", filename="resume.pdf")
+            response.headers.set("Access-Control-Allow-Origin", "http://localhost:5173")
+            # response.headers.set("Access-Control-Allow-Headers", "Content-Type")
+            return response
+        else:
+            return {"error": "LaTeX compilation failed"}, 500
+
+    except Exception as e:
+        print("[ERROR] Exception in /compile:", str(e))
+        return {"error": str(e)}, 500
+    
 
 @app.route('/')
 def index():

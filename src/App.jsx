@@ -49,6 +49,7 @@ import InternshipDashboard from "./components/internship/InternshipDashboard";
 import SimulationDetail from "./components/internship/SimulationDetail";
 import SimulationTaskPage from "./components/internship/SimulationTaskPage";
 import ProgressPage from "./components/internship/ProgressPage";
+import AtsBuilder from "./components/ats_builder/AtsBuilder";
 import ATSScanner from "./components/ATSChecker";
 import ScanResults from "./components/ScanResults";
 
@@ -78,7 +79,7 @@ function App() {
         path="/confirmation"
         element={
           <ProtectedRoute>
-            <Confirmation/>
+            <Confirmation />
           </ProtectedRoute>
         }
       />
@@ -90,21 +91,21 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route 
-        path="/edit-internship" 
-        element={
-          <ProtectedRoute> 
-            <SimulationsManager />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/edit-internship/:id" 
+      <Route
+        path="/edit-internship"
         element={
           <ProtectedRoute>
             <SimulationsManager />
           </ProtectedRoute>
-        } 
+        }
+      />
+      <Route
+        path="/edit-internship/:id"
+        element={
+          <ProtectedRoute>
+            <SimulationsManager />
+          </ProtectedRoute>
+        }
       />
 
       {/* Protected Routes */}
@@ -210,15 +211,10 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route 
-        path="/resume"
-        element={
-          <ResumeBuilder/>
-        }
-      
-      />
+      <Route path="/resume" element={<ResumeBuilder />} />
+
+      <Route path="/ats-builder" element={<AtsBuilder />} />
     </Routes>
-    
   );
 }
 
