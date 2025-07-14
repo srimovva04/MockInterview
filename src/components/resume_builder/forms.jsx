@@ -61,79 +61,113 @@ export const PersonalInfoForm = ({ data, onChange }) => {
 };
 
 export const EducationForm = ({ data, onChange }) => {
-  const handleChange = (field, value) => {
-    onChange({ ...data, [field]: value });
+  const addEducation = () => {
+    const newEntry = {
+      id: crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`,
+      degree: "",
+      gpa: "",
+      school: "",
+      location: "",
+      duration: "",
+      coursework: [],
+    };
+    onChange([...data, newEntry]);
   };
 
-  const handleCourseworkChange = (value) => {
-    const coursework = value.split('\n').filter((line) => line.trim() !== '');
-    handleChange('coursework', coursework);
+  const removeEducation = (id) => {
+    onChange(data.filter((edu) => edu.id !== id));
+  };
+
+  const updateEducation = (id, field, value) => {
+    const updated = data.map((edu) =>
+      edu.id === id ? { ...edu, [field]: value } : edu
+    );
+    onChange(updated);
+  };
+
+  const updateCoursework = (id, value) => {
+    const list = value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line !== "");
+    updateEducation(id, "coursework", list);
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-[#374151] mb-1">Degree</label>
-          <input
-            className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={data.degree}
-            onChange={(e) => handleChange('degree', e.target.value)}
-            placeholder="B.S. in Computer Science"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-[#374151] mb-1">GPA</label>
-          <input
-            className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={data.gpa}
-            onChange={(e) => handleChange('gpa', e.target.value)}
-            placeholder="3.8"
-          />
-        </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold text-[#374151]">Education</h3>
+        <button
+          onClick={addEducation}
+          className="flex items-center px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="w-4 h-4 mr-1" /> Add School
+        </button>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-[#374151] mb-1">School</label>
-        <input
-          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={data.school}
-          onChange={(e) => handleChange('school', e.target.value)}
-          placeholder="University Name"
-        />
-      </div>
+      {data.map((edu) => (
+        <div key={edu.id} className="border border-[#374151] p-4 rounded-lg bg-white space-y-4">
+          <div className="flex justify-between items-start">
+            <h4 className="font-medium text-[#374151]">School Details</h4>
+            <button
+              onClick={() => removeEducation(edu.id)}
+              className="text-red-600 hover:text-red-800 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-[#374151] mb-1">Location</label>
-          <input
-            className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={data.location}
-            onChange={(e) => handleChange('location', e.target.value)}
-            placeholder="City, State"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-[#374151] mb-1">Duration</label>
-          <input
-            className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={data.duration}
-            onChange={(e) => handleChange('duration', e.target.value)}
-            placeholder="Fall 2020 – May 2024"
-          />
-        </div>
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              className="w-full p-2 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Degree"
+              value={edu.degree}
+              onChange={(e) => updateEducation(edu.id, "degree", e.target.value)}
+            />
+            <input
+              className="w-full p-2 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="GPA"
+              value={edu.gpa}
+              onChange={(e) => updateEducation(edu.id, "gpa", e.target.value)}
+            />
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium text-[#374151] mb-1">Coursework (one per line)</label>
-        <textarea
-          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={data.coursework.join('\n')}
-          onChange={(e) => handleCourseworkChange(e.target.value)}
-          rows={4}
-          placeholder="Data Structures&#10;Algorithms&#10;Database Systems"
-        />
-      </div>
+          <input
+            className="w-full p-2 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="School Name"
+            value={edu.school}
+            onChange={(e) => updateEducation(edu.id, "school", e.target.value)}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              className="w-full p-2 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Location"
+              value={edu.location}
+              onChange={(e) => updateEducation(edu.id, "location", e.target.value)}
+            />
+            <input
+              className="w-full p-2 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Duration (e.g., 2020 - 2024)"
+              value={edu.duration}
+              onChange={(e) => updateEducation(edu.id, "duration", e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#374151] mb-1">
+              Coursework (one per line)
+            </label>
+            <textarea
+              rows={3}
+              className="w-full p-2 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Data Structures&#10;Algorithms&#10;Database Systems"
+              value={edu.coursework.join("\n")}
+              onChange={(e) => updateCoursework(edu.id, e.target.value)}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

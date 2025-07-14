@@ -23,7 +23,7 @@ def extract_text_from_pdf(file_path):
 
 def call_gemini_resume_parser(text):
     prompt = f"""
-You are an expert resume parser and editor for ATS (Applicant Tracking Systems). 
+You are an expert resume parser and editor for ATS (Applicant Tracking Systems).
 
 From the resume text provided below, extract and **rephrase** the content to be:
 - Professional and concise
@@ -41,14 +41,16 @@ Return the output in the following structured JSON format (no explanations):
     "city": string,
     "country": string
   }},
-  "education": {{
-    "degree": string,
-    "gpa": string,
-    "school": string,
-    "location": string,
-    "duration": string,
-    "coursework": [string]
-  }},
+  "education": [
+    {{
+      "degree": string,
+      "gpa": string,
+      "school": string,
+      "location": string,
+      "duration": string,
+      "coursework": [string]
+    }}
+  ],
   "skills": {{
     "languages": [string],
     "tools": [string]
@@ -72,13 +74,16 @@ Return the output in the following structured JSON format (no explanations):
   "additionalExperience": [string]
 }}
 
+Instructions:
+- For the "education" field, extract **all education entries** found in the resume and return them as an array of objects, not just one.
+
 Only return the JSON object — do not include ```json or explanation.
 
 Resume text:
 {text}
 """
 
-    model = genai.GenerativeModel("gemini-1.5-pro")
+    model = genai.GenerativeModel("gemini-2.5-pro")
     response = model.generate_content(prompt)
     if hasattr(response, 'text'):
         return response.text.strip()

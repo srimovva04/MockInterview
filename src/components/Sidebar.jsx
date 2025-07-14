@@ -71,6 +71,12 @@ const Sidebar = () => {
       active: false,
       path: "/preparation-hub",
     },
+    {
+      icon: FileText,
+      label: "Resume Builder",
+      active: false,
+      path: "/land",
+    },
     // { icon: BookOpen, label: "Preparation Hub", route: "/preparation-hub" },
     {
       icon: FileText,

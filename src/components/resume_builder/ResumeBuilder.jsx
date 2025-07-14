@@ -5,9 +5,11 @@ import { useLocation } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 import { PersonalInfoForm, EducationForm, EmploymentForm, ProjectsForm, SkillsForm } from "./forms.jsx";
 import { useEffect } from "react";
+import { Plus, Trash2 } from "lucide-react";
 
 const ResumeBuilder = () => {
   const location = useLocation();
+  const [template, setTemplate] = useState("classic"); // NEW
   const parsed = location.state?.parsedData;
   const [tab, setTab] = useState("Personal");
   const [resumeData, setResumeData] = useState({
@@ -18,14 +20,7 @@ const ResumeBuilder = () => {
   phone: "",
   email: "",
 },
-    education: {
-      degree: "",
-      gpa: "",
-      school: "",
-      location: "",
-      duration: "",
-      coursework: [],
-    },
+    education: [],
     employment: [],
     additionalExperience: [],
     projects: [],
@@ -37,14 +32,26 @@ const ResumeBuilder = () => {
 useEffect(() => {
   if (parsed) {
     setResumeData((prev) => ({
-      ...prev,
-      personalInfo: { ...prev.personalInfo, ...parsed.personalInfo },
-      education: { ...prev.education, ...parsed.education },
-      skills: { ...prev.skills, ...parsed.skills },
-      employment: parsed.employment || [],
-      projects: parsed.projects || [],
-      additionalExperience: parsed.additionalExperience || [],
-    }));
+  ...prev,
+  personalInfo: { ...prev.personalInfo, ...parsed.personalInfo },
+  education: normalizeArray(parsed.education, {
+    degree: "", gpa: "", school: "", location: "", duration: "", coursework: [],
+  }).map(e => ({ ...e, coursework: Array.isArray(e.coursework) ? e.coursework : [] })),
+  employment: normalizeArray(parsed.employment, {
+    title: "", company: "", duration: "", bullets: [""],
+  }).map(e => ({ ...e, bullets: Array.isArray(e.bullets) ? e.bullets : [""] })),
+  projects: normalizeArray(parsed.projects, {
+    name: "", duration: "", description: "", bullets: [""],
+  }).map(p => ({ ...p, bullets: Array.isArray(p.bullets) ? p.bullets : [""] })),
+  skills: {
+    languages: Array.isArray(parsed.skills?.languages) ? parsed.skills.languages : [],
+    tools: Array.isArray(parsed.skills?.tools) ? parsed.skills.tools : [],
+  },
+  additionalExperience: Array.isArray(parsed.additionalExperience)
+    ? parsed.additionalExperience
+    : [],
+}));
+
   }
 }, [parsed]);
   const resumeRef = useRef();
@@ -64,6 +71,15 @@ useEffect(() => {
         .save();
     }
   };
+  const normalizeArray = (arr, fallback = {}) =>
+  Array.isArray(arr)
+    ? arr.map((entry) => ({
+        ...fallback,
+        ...entry,
+        id: crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`,
+      }))
+    : [];
+
 
   // Add this handler inside ResumeBuilder component
   const handleFileUpload = async (e) => {
@@ -82,14 +98,14 @@ useEffect(() => {
 
     // Merge safely with defaults
     setResumeData((prev) => ({
-  ...prev,
-  personalInfo: { ...prev.personalInfo, ...parsed.personalInfo },
-  education: { ...prev.education, ...parsed.education },
-  skills: { ...prev.skills, ...parsed.skills },
-  employment: parsed.employment || [],
-  projects: parsed.projects || [],
-  additionalExperience: parsed.additionalExperience || [],
-}));
+      ...prev,
+      personalInfo: { ...prev.personalInfo, ...parsed.personalInfo },
+      education: Array.isArray(parsed.education) ? parsed.education : [],
+      skills: { ...prev.skills, ...parsed.skills },
+      employment: parsed.employment || [],
+      projects: parsed.projects || [],
+      additionalExperience: parsed.additionalExperience || [],
+    }));
 
   } catch (err) {
     alert('Resume parsing failed.');
@@ -207,7 +223,6 @@ useEffect(() => {
               </div>
             </div>
 
-            {/* Other sections (Employment, Education, etc.) remain unchanged but should also use safe hex values if styled */}
 
             {/* Employment Section */}
             {resumeData.employment.length > 0 && (
@@ -231,27 +246,31 @@ useEffect(() => {
             )}
 
             {/* Education Section */}
-            {(resumeData.education.school || resumeData.education.degree) && (
+            {Array.isArray(resumeData.education) && resumeData.education.length > 0 && (
               <Section title="Education">
-                <div className="flex justify-between font-bold text-[#374151]">
-                  <span>{resumeData.education.school || "University Name"}</span>
-                  <span>{resumeData.education.duration}</span>
-                </div>
-                {resumeData.education.degree && (
-                  <p className="text-[#374151]">
-                    {resumeData.education.degree}
-                    {resumeData.education.gpa && ` | GPA: ${resumeData.education.gpa}`}
-                  </p>
-                )}
-                {resumeData.education.location && (
-                  <p className="italic text-[#374151]">{resumeData.education.location}</p>
-                )}
-                {resumeData.education.coursework.length > 0 && (
-                  <div className="mt-1">
-                    <span className="font-medium">Relevant Coursework: </span>
-                    <span className="text-[#374151]">{resumeData.education.coursework.join(", ")}</span>
+                {resumeData.education.map((edu, idx) => (
+                  <div key={idx} className="mb-2">
+                    <div className="flex justify-between font-bold text-[#374151]">
+                      <span>{edu.school || "University Name"}</span>
+                      <span>{edu.duration}</span>
+                    </div>
+                    {edu.degree && (
+                      <p className="text-[#374151]">
+                        {edu.degree}
+                        {edu.gpa && ` | GPA: ${edu.gpa}`}
+                      </p>
+                    )}
+                    {edu.location && (
+                      <p className="italic text-[#374151]">{edu.location}</p>
+                    )}
+                    {Array.isArray(edu.coursework) && edu.coursework.length > 0 && (
+                      <div className="mt-1">
+                        <span className="font-medium">Relevant Coursework: </span>
+                        <span className="text-[#374151]">{edu.coursework.join(", ")}</span>
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
               </Section>
             )}
 
