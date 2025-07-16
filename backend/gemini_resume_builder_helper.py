@@ -1,217 +1,78 @@
 import google.generativeai as genai
 import os
+import ast
+
 
 # Set your API key here (or use env vars)
 api_key = os.getenv("GEMINI_API_KEY") 
 genai.configure(api_key=api_key)
 
 # model = genai.GenerativeModel('gemini-pro')
-model = genai.GenerativeModel('gemini-1.5-pro')
+model = genai.GenerativeModel('gemini-2.5-pro')
+
 
 def refine_all_bullets(data):
-    prompt_parts = []
+    """
+    Enhances the entire resume:
+    - Spellchecks and grammatically improves all fields
+    - Formats bullets (2 for experience/education, 3 for projects)
+    - Keeps structure intact
+    """
 
-    for section in ['experience', 'education', 'projects']:
-        for i, entry in enumerate(data[section]):
-            bullets = entry.get('bullets' if section != 'education' else 'details', [])
-            if bullets:
-                content = ' '.join(bullets)
-                prompt_parts.append(f"\nSection: {section.capitalize()}, Index: {i}\nBullets: {content}")
 
     prompt = f"""
-You are a resume bullet point refiner.
+You are a resume enhancement assistant.
 
-You will be given different resume sections with lists of bullet points. 
-For each section:
-- Rewrite the bullets in professional, grammatically correct, resume-ready format.
-- Correct spelling and grammar errors.
-- If input is in paragraph form, break it into bullet points.
-- For 'Experience' and 'Education': Return exactly 2 bullet points.
-- For 'Projects': Return exactly 3 bullet points.
-- Remove symbols like -, •, *.
-- Do not use placeholders like [Month], [Percent].
+You will be given a resume in structured JSON format. Your tasks:
+1. Correct all spelling and grammar errors across **all fields** (personal info, titles, dates, etc.).
+2. Rewrite all bullets in a professional, resume-ready format.
+    - Experience & Education: exactly 2 strong bullet points each
+    - Projects: exactly 3 strong bullet points each
+3. Preserve structure. Keep fields like 'technologies' and 'skills' as strings.
+4. Do not use markdown or triple quotes. Output should be a valid Python dictionary.
+5. Do NOT include any explanations—just return the corrected Python dictionary.
 
-Return output section-wise and index-wise clearly.
+Resume data:
+{data}
 
-Input:
-{''.join(prompt_parts)}
-
-Output format:
-Section: Experience, Index: 0
-- Bullet 1
-- Bullet 2
-
-Section: Projects, Index: 1
-- Bullet 1
-- Bullet 2
-- Bullet 3
+Return only the corrected Python dictionary:
 """
 
     try:
         response = model.generate_content(prompt)
-        output = response.text.strip()
+        cleaned_text = response.text.strip()
 
-        section_blocks = output.split("Section:")
-        for block in section_blocks:
-            if not block.strip():
-                continue
-            header, *lines = block.strip().split("\n")
-            section, idx = header.strip().split(", Index: ")
-            section = section.lower()
-            idx = int(idx)
-            refined = [line.strip("-•* ") for line in lines if line.strip()]
-            if section == "education":
-                data[section][idx]['details'] = refined[:2]
-            else:
-                data[section][idx]['bullets'] = refined[:3] if section == "projects" else refined[:2]
+        # Strip markdown if Gemini wraps it in ```python blocks
+        if cleaned_text.startswith("```"):
+            cleaned_text = cleaned_text.strip("` \n")
+            # Handle things like ```python\n{ ... }\n```
+            if cleaned_text.lower().startswith("python"):
+                cleaned_text = cleaned_text[len("python"):].strip()
+
+        # Convert output string back to dict safely
+        refined_data = ast.literal_eval(cleaned_text)
+        return refined_data
 
     except Exception as e:
-        print("[Gemini Error - combined refinement]:", e)
+        print("[Gemini Error - full enhancement]:", e)
+        return data  # fallback to original if Gemini fails
+    
 
-    return data
-
-
-# def refine_all_bullets(data):
-#     """
-#     Enhanced version:
-#     - Accepts paragraph or bullet-style user input
-#     - Fixes grammar/spelling
-#     - Converts paragraph text into bullet points
-#     - Groups input per section/index to stay within Gemini quota
-#     """
-
-#     prompt_parts = []
-#     section_map = []
-
-#     # Gather bullet data
-#     for section in ['experience', 'education', 'projects']:
-#         for i, entry in enumerate(data[section]):
-#             bullets = entry.get('bullets' if section != 'education' else 'details', [])
-#             if bullets:
-#                 prompt_parts.append(f"\nSection: {section.capitalize()}, Index: {i}\nBullets: {', '.join(bullets)}")
-#                 section_map.append((section, i))
 
 #     prompt = f"""
-# You are a resume bullet point refiner.
+# You are a resume enhancement assistant.
 
-# You will be given different resume sections with lists of bullet points. 
-# For each section:
-# - Rewrite the bullets in professional, grammatically correct, resume-ready format.
-# - For 'Experience' and 'Education': Return exactly 2 bullet points.
-# - For 'Projects': Return exactly 3 bullet points.
-# - Remove symbols like -, •, *.
-# - Do not use placeholders like [Month], [Percent].
-
-# Return output section-wise and index-wise clearly.
+# You will be given a resume in structured JSON format. Your tasks:
+# 1. Correct all spelling and grammar errors across **all fields** (including personal info, titles, etc.).
+# 2. Improve **bullet points** to make them resume-appropriate.
+#     - For 'experience' and 'education', return exactly 2 strong bullet points per entry.
+#     - For 'projects', return exactly 3 meaningful bullet points per entry.
+# 3. Maintain proper capitalization of technical terms like React, JavaScript, Tailwind, etc.
+# 4. Return the final data in **valid Python dictionary** format with the exact same structure as input.
+# 5. Do not wrap the output in markdown or explanation.
 
 # Input:
-# {''.join(prompt_parts)}
-
-# Output format:
-# Section: Experience, Index: 0
-# - Bullet 1
-# - Bullet 2
-
-# Section: Projects, Index: 1
-# - Bullet 1
-# - Bullet 2
-# - Bullet 3
-# """
-
-#     try:
-#         response = model.generate_content(prompt)
-#         output = response.text.strip()
-
-#         # Parse output
-#         section_blocks = output.split("Section:")
-#         for block in section_blocks:
-#             if not block.strip():
-#                 continue
-#             header, *lines = block.strip().split("\n")
-#             section, idx = header.strip().split(", Index: ")
-#             section = section.strip().lower()
-#             idx = int(idx.strip())
-#             refined = [line.strip("-•* ") for line in lines if line.strip()]
-#             if section == "education":
-#                 data[section][idx]['details'] = refined[:2]
-#             else:
-#                 data[section][idx]['bullets'] = refined[:3] if section == "projects" else refined[:2]
-
-#     except Exception as e:
-#         print("[Gemini Error - combined refinement]:", e)
-
-#     return data
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def refine_bullet_points(raw_bullets, section_name):
-#     if not raw_bullets:
-#         return []
-#     prompt = f"""
-# You are a resume writing assistant.
-
-# Rewrite the given input for the section **{section_name}** into professional resume bullet points. 
-# Ensure all grammar and spelling issues are fixed.
-
-# Formatting Rules:
-# - For Experience and Education: Give exactly 2 bullet points.
-# - For Projects: Give exactly 3 bullet points (short sentences).
-# - Write each bullet point as a full sentence or phrase suitable for a resume.
-# - Remove symbols like "-", "•", or "*".
-# - Do not use placeholders like [Month], [Percent].
-# - No extra formatting or markdown.
-
-# Input: {', '.join(raw_bullets)}
+# {data}
 
 # Output:
 # """
-
-#     try:
-#         response = model.generate_content(prompt)
-#         output = response.text.strip()
-
-#         # Convert plain text to list
-#         lines = [line.strip("-• ") for line in output.split("\n") if line.strip()]
-#         return lines[:3]
-#     except Exception as e:
-#         print("[Gemini Error]:", e)
-#         return raw_bullets[:3]  # fallback
-
-
-
-
-# def refine_text_field(text: str, field_name: str) -> str:
-#     if not text.strip():
-#         return text  # Skip empty
-
-#     prompt = f"""
-# You are a resume proofreading assistant.
-
-# Correct any spelling or grammatical errors in the following {field_name} input. 
-# Do not change the meaning or style. Return a clean, corrected version.
-
-# Input: {text}
-
-# Output:
-# """
-
-#     try:
-#         response = model.generate_content(prompt)
-#         return response.text.strip()
-#     except Exception as e:
-#         print(f"[Gemini Error - field {field_name}]:", e)
-#         return text

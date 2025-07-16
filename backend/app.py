@@ -46,6 +46,8 @@ from utils import generate_latex, compile_latex_to_pdf
 import io
 from flask import make_response
 from gemini_resume_builder_helper import refine_all_bullets
+# from utils import apply_local_spellcheck  # or spellcheck_utils if placed separately
+
 
 app = Flask(__name__)
 # 🔐 Secret key for sessions (required even if you don't use sessions yet)
@@ -106,6 +108,9 @@ def compile_resume():
         # ✅ Limit project and education count
         data['projects'] = data['projects'][:4]
         data['education'] = data['education'][:2]
+
+        # ✅ Apply local spell check (offline, fast)
+        # data = apply_local_spellcheck(data)
 
         data = refine_all_bullets(data)
         

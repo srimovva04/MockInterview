@@ -105,6 +105,49 @@ import shutil
 import subprocess
 import tempfile
 from gemini_resume_builder_helper import refine_all_bullets
+from textblob import TextBlob
+
+
+# def correct_spelling(text):
+#     try:
+#         if not text or len(text.split()) > 50:  # Avoid large paragraphs
+#             return text
+#         return str(TextBlob(text).correct())
+#     except Exception:
+#         return text
+
+# def apply_local_spellcheck(data):
+#     # Personal info
+#     for k, v in data.get("personal", {}).items():
+#         data["personal"][k] = correct_spelling(v)
+
+#     # Experience
+#     for exp in data.get("experience", []):
+#         exp["title"] = correct_spelling(exp.get("title", ""))
+#         exp["company"] = correct_spelling(exp.get("company", ""))
+#         exp["dates"] = correct_spelling(exp.get("dates", ""))
+#         exp["bullets"] = [correct_spelling(b) for b in exp.get("bullets", [])]
+
+#     # Education
+#     for edu in data.get("education", []):
+#         edu["institution"] = correct_spelling(edu.get("institution", ""))
+#         edu["location"] = correct_spelling(edu.get("location", ""))
+#         edu["dates"] = correct_spelling(edu.get("dates", ""))
+#         edu["details"] = [correct_spelling(d) for d in edu.get("details", [])]
+
+#     # Projects
+#     for proj in data.get("projects", []):
+#         proj["name"] = correct_spelling(proj.get("name", ""))
+#         proj["year"] = correct_spelling(proj.get("year", ""))
+#         proj["bullets"] = [correct_spelling(b) for b in proj.get("bullets", [])]
+
+#     # Tech & Skills
+#     data["technologies"] = correct_spelling(data.get("technologies", ""))
+#     data["skills"] = correct_spelling(data.get("skills", ""))
+
+#     return data
+
+
 
 def generate_latex(data):
     def itemize(items):
