@@ -15,7 +15,7 @@ def refine_all_bullets(data):
     """
     Enhances the entire resume:
     - Spellchecks and grammatically improves all fields
-    - Formats bullets (2 for experience/education, 3 for projects)
+    - Formats bullets (2 for experience, 1 for education, 3 for projects)
     - Keeps structure intact
     """
 
@@ -26,7 +26,8 @@ You are a resume enhancement assistant.
 You will be given a resume in structured JSON format. Your tasks:
 1. Correct all spelling and grammar errors across **all fields** (personal info, titles, dates, etc.).
 2. Rewrite all bullets in a professional, resume-ready format.
-    - Experience & Education: exactly 2 strong bullet points each
+    - Experience: exactly 2 strong bullet points each
+    -  Education: exactly 1 strong bullet point
     - Projects: exactly 3 strong bullet points each
 3. Preserve structure. Keep fields like 'technologies' and 'skills' as strings.
 4. Do not use markdown or triple quotes. Output should be a valid Python dictionary.

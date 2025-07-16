@@ -106,8 +106,9 @@ def compile_resume():
         data = request.json
 
         # ✅ Limit project and education count
-        data['projects'] = data['projects'][:4]
-        data['education'] = data['education'][:2]
+        if data.get("resumeType") == "one":
+            data['projects'] = data['projects'][:4]
+            data['education'] = data['education'][:2]
 
         # ✅ Apply local spell check (offline, fast)
         # data = apply_local_spellcheck(data)

@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const ResumeForm = () => {
+  const [resumeType, setResumeType] = useState(null);
+  const [showPopup, setShowPopup] = useState(true);
+
   const [formData, setFormData] = useState({
     personal: {
       name: "",
@@ -18,11 +21,22 @@ const ResumeForm = () => {
     skills: "",
   });
 
+  // const addProject = () => {
+  //   if (formData.projects.length >= 4) {
+  //     window.alert("You can only add a maximum of 4 projects.");
+  //     return;
+  //   }
+  //   setFormData({
+  //     ...formData,
+  //     projects: [...formData.projects, { name: "", year: "", bullets: [""] }],
+  //   });
+  // };
+
   const addProject = () => {
-    if (formData.projects.length >= 4) {
-      window.alert("You can only add a maximum of 4 projects.");
-      return;
-    }
+    if (resumeType === "one" && formData.projects.length >= 4) {
+    alert("You can only add up to 4 projects for a one-page resume.");
+    return;
+  }
     setFormData({
       ...formData,
       projects: [...formData.projects, { name: "", year: "", bullets: [""] }],
@@ -40,8 +54,10 @@ const ResumeForm = () => {
   };
 
   const addEducation = () => {
-    if (formData.education.length >= 2) {
-      window.alert("You can only add 2 education entries.");
+    if (resumeType === "one" && formData.education.length >= 2) {
+      alert(
+        "You can only add up to 2 education entries for a one-page resume."
+      );
       return;
     }
     setFormData({
@@ -52,11 +68,24 @@ const ResumeForm = () => {
       ],
     });
   };
+  // const addEducation = () => {
+  //   if (formData.education.length >= 2) {
+  //     window.alert("You can only add 2 education entries.");
+  //     return;
+  //   }
+  //   setFormData({
+  //     ...formData,
+  //     education: [
+  //       ...formData.education,
+  //       { location: "", institution: "", dates: "", details: [""] },
+  //     ],
+  //   });
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios
-      .post("http://localhost:5000/compile", formData, {
+      .post("http://localhost:5000/compile", { ...formData, resumeType }, {
         responseType: "blob",
         // withCredentials: true,
       })
@@ -69,6 +98,37 @@ const ResumeForm = () => {
         link.click();
       });
   };
+
+  if (showPopup) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl text-center space-y-4">
+          <h2 className="text-xl font-semibold text-gray-700">Choose Resume Type</h2>
+          <p className="text-gray-600">Do you want to generate a one-page or two-page resume?</p>
+          <div className="flex justify-around space-x-4">
+            <button
+              onClick={() => {
+                setResumeType("one");
+                setShowPopup(false);
+              }}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            >
+              One Page
+            </button>
+            <button
+              onClick={() => {
+                setResumeType("two");
+                setShowPopup(false);
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            >
+              Two Page
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form className="max-w-4xl mx-auto p-6 space-y-6" onSubmit={handleSubmit}>

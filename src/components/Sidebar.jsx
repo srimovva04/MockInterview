@@ -84,11 +84,12 @@ const Sidebar = () => {
       active: false,
       path: "/ats-checker",
     },
+
     {
-      icon: GraduationCap,
-      label: "Virtual Internship",
+      icon: FileText,
+      label: "Resume Generator",
       active: false,
-      path: "/internship",
+      path: "/ats-builder",
     },
   ];
 
