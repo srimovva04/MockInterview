@@ -14,7 +14,7 @@ const ResumeForm = () => {
     experience: [{ title: "", company: "", dates: "", bullets: [""] }],
     education: [{ location: "", institution: "", dates: "", details: [""] }],
     projects: [{ name: "", year: "", bullets: [""] }],
-    technologies: [""],
+    technologies: "",
     skills: "",
   });
 
@@ -128,16 +128,6 @@ const ResumeForm = () => {
           }
         />
       </div>
-      <textarea
-        className="w-full p-3 border border-gray-300 rounded-md"
-        placeholder="About Me"
-        onChange={(e) =>
-          setFormData({
-            ...formData,
-            personal: { ...formData.personal, about: e.target.value },
-          })
-        }
-      />
 
       <h2 className="text-2xl font-semibold text-gray-800">Technologies</h2>
       <input
@@ -146,7 +136,7 @@ const ResumeForm = () => {
         onChange={(e) =>
           setFormData({
             ...formData,
-            technologies: e.target.value.split(",").map((s) => s.trim()),
+            technologies: e.target.value,
           })
         }
       />

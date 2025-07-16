@@ -45,7 +45,7 @@ from flask_cors import CORS
 from utils import generate_latex, compile_latex_to_pdf
 import io
 from flask import make_response
-from gemini_resume_builder_helper import refine_bullet_points, refine_text_field
+from gemini_resume_builder_helper import refine_all_bullets
 
 app = Flask(__name__)
 # 🔐 Secret key for sessions (required even if you don't use sessions yet)
@@ -107,33 +107,8 @@ def compile_resume():
         data['projects'] = data['projects'][:4]
         data['education'] = data['education'][:2]
 
-
-        # ✅ Refine personal details
-        for key in ['address', 'city_state_zip', 'phone', 'email', 'about']:
-            data['personal'][key] = refine_text_field(data['personal'].get(key, ""), field_name=f"Personal - {key}")
-
-        # ✅ Refine experience
-        for exp in data.get('experience', []):
-            for field in ['title', 'company', 'dates']:
-                exp[field] = refine_text_field(exp.get(field, ""), field_name=f"Experience - {field}")
-            exp['bullets'] = refine_bullet_points(exp.get('bullets', []), section_name="Experience")
-
-        # ✅ Refine education
-        for edu in data.get('education', []):
-            for field in ['institution', 'location', 'dates']:
-                edu[field] = refine_text_field(edu.get(field, ""), field_name=f"Education - {field}")
-            edu['details'] = refine_bullet_points(edu.get('details', []), section_name="Education")
-
-        # ✅ Refine projects
-        for proj in data.get('projects', []):
-            for field in ['name', 'year']:
-                proj[field] = refine_text_field(proj.get(field, ""), field_name=f"Project - {field}")
-            proj['bullets'] = refine_bullet_points(proj.get('bullets', []), section_name="Project")
-
-        # ✅ Refine tech/skills
-        data['technologies'] = [refine_text_field(tech, "Technology") for tech in data.get('technologies', [])]
-        data['skills'] = refine_text_field(data.get('skills', ""), "Skills")
-
+        data = refine_all_bullets(data)
+        
         latex = generate_latex(data)
 
         pdf = compile_latex_to_pdf(latex)

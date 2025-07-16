@@ -1,3 +1,37 @@
+\documentclass[]{mcdowellcv}
+\usepackage{amsmath}
+
+\name{<<NAME>>}
+\address{<<ADDRESS>> \\ <<CITYZIP>>}
+\contacts{<<PHONE>> \\ <<EMAIL>>}
+
+\begin{document}
+\thispagestyle{empty}  % Remove page number from first page
+\makeheader
+
+\begin{cvsection}{Employment}
+<<EXPERIENCE>>
+\end{cvsection}
+
+\begin{cvsection}{Education}
+<<EDUCATION>>
+\end{cvsection}
+
+\begin{cvsection}{Projects}
+<<PROJECTS>>
+\end{cvsection}
+
+\begin{cvsection}{Languages and Technologies}
+
+\vspace{0.5em}
+\textbf{Technologies:} <<TECHNOLOGIES>> \\[0.5em]
+\textbf{Skills:} <<SKILLS>>
+
+\end{cvsection}
+
+\end{document}
+
+
 % \documentclass[]{mcdowellcv}
 % \usepackage{amsmath}
 % \name{<<NAME>>}
@@ -35,38 +69,22 @@
 % \end{document}
 
 
-\documentclass[]{mcdowellcv}
-\usepackage{amsmath}
 
 
-\name{<<NAME>>}
-\address{<<ADDRESS>> \\ <<CITYZIP>>}
-\contacts{<<PHONE>> \\ <<EMAIL>>}
 
-\begin{document}
-\thispagestyle{empty}  % Remove page number from first page
-% \noindent              % Prevent indent
-\makeheader
 
-\begin{cvsection}{Employment}
-<<EXPERIENCE>>
-\end{cvsection}
 
-\begin{cvsection}{Education}
-<<EDUCATION>>
-\end{cvsection}
 
-\begin{cvsection}{Projects}
-<<PROJECTS>>
-\end{cvsection}
 
-\begin{cvsection}{Languages and Technologies}
-\begin{cvsubsection}{}{}{}
-\begin{itemize}
-<<TECHNOLOGIES>>
-<<SKILLS>>
-\end{itemize}
-\end{cvsubsection}
-\end{cvsection}
 
-\end{document}
+
+
+
+% \begin{cvsection}{Languages and Technologies}
+% \begin{cvsubsection}{}{}{}
+% \begin{itemize}
+% <<TECHNOLOGIES>>
+% <<SKILLS>>
+% \end{itemize}
+% \end{cvsubsection}
+% \end{cvsection}
