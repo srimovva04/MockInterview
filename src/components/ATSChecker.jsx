@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { useNavigate } from "react-router-dom";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const ATSScanner = () => {
   const navigate = useNavigate();
@@ -77,7 +79,7 @@ const ATSScanner = () => {
         inputMethod === "text" ? jobDescText : "JD from file not implemented"
       );
 
-      const response = await fetch("http://localhost:5000/upload_resume", {
+      const response = await fetch(`${BASE_URL}/upload_resume`, {
         method: "POST",
         body: formData,
       });

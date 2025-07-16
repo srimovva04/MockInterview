@@ -6,6 +6,8 @@ import html2pdf from "html2pdf.js";
 import { PersonalInfoForm, EducationForm, EmploymentForm, ProjectsForm, SkillsForm } from "./forms.jsx";
 import { useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const PDF_API_URL = import.meta.env.VITE_PDF_API_URL;
 
 const ResumeBuilder = () => {
   const location = useLocation();
@@ -63,7 +65,7 @@ useEffect(() => {
 
   const resumeHtml = resumeRef.current.innerHTML; // Use only inner content
 
-  const response = await fetch("http://localhost:4000/generate-pdf", {
+  const response = await fetch(`${PDF_API_URL}/generate-pdf`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -105,7 +107,7 @@ useEffect(() => {
   formData.append('resume', file);
 
   try {
-    const res = await fetch('http://localhost:5000/api/parse-resume', {
+    const res = await fetch(`${BASE_URL}/parse-resume`, {
       method: 'POST',
       body: formData
     });
