@@ -67,7 +67,7 @@ Return the output in the following structured JSON format (no explanations):
     {{
       "name": string,
       "duration": string,
-      "description": string,
+      "description": "Tech Stack: <comma-separated list of technologies>",
       "bullets": [string]
     }}
   ],
@@ -76,6 +76,7 @@ Return the output in the following structured JSON format (no explanations):
 
 Instructions:
 - For the "education" field, extract **all education entries** found in the resume and return them as an array of objects, not just one.
+- For the "projects" section, return the tech stack as the only content inside "description" in the format: "Tech Stack: X, Y, Z".
 
 Only return the JSON object — do not include ```json or explanation.
 

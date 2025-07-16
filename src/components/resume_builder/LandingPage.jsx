@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FilePlus, UploadCloud, Loader2 } from "lucide-react";
 import Sidebar from "../Sidebar";
@@ -42,11 +42,8 @@ const LandingPage = () => {
       </div>
 
       {loading ? (
-        <div className="flex items-center text-blue-600 space-x-2">
-          <Loader2 className="animate-spin h-5 w-5" />
-          <span>Parsing your resume...</span>
-        </div>
-      ) : (
+  <LoadingAnimation />
+) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Card 1 */}
           <div
@@ -88,3 +85,78 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
+const LoadingAnimation = () => {
+  const steps = [
+    "Uploading your resume...",
+    "Parsing content intelligently...",
+    "Extracting contact details...",
+    "Identifying your education...",
+    "Analyzing your work experience...",
+    "Highlighting your top skills...",
+    "Structuring everything beautifully...",
+    "Almost done. Hang tight..."
+  ];
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % steps.length);
+    }, 5000); // show each step every 2.5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const percentage = ((index + 1) / steps.length) * 100;
+
+  return (
+    <div className="flex flex-col items-center space-y-6">
+      <CircularProgress progress={percentage} />
+      <p className="text-blue-700 text-lg font-medium transition-opacity duration-1000 ease-in-out">
+        {steps[index]}
+      </p>
+    </div>
+  );
+};
+
+const CircularProgress = ({ progress }) => {
+  const radius = 45;
+  const stroke = 6;
+  const normalizedRadius = radius - stroke * 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  return (
+    <svg height={radius * 2} width={radius * 2}>
+      <circle
+        stroke="#E5E7EB"
+        fill="transparent"
+        strokeWidth={stroke}
+        r={normalizedRadius}
+        cx={radius}
+        cy={radius}
+      />
+      <circle
+        stroke="#3B82F6"
+        fill="transparent"
+        strokeWidth={stroke}
+        strokeLinecap="round"
+        strokeDasharray={circumference + ' ' + circumference}
+        style={{ strokeDashoffset, transition: 'stroke-dashoffset 1s ease-in-out' }}
+        r={normalizedRadius}
+        cx={radius}
+        cy={radius}
+      />
+      <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        dy=".3em"
+        fontSize="14"
+        fill="#1E3A8A"
+        className="font-semibold"
+      >
+        {Math.round(progress)}%
+      </text>
+    </svg>
+  );
+};

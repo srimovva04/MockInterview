@@ -57,20 +57,36 @@ useEffect(() => {
   const resumeRef = useRef();
   const tabs = ["Personal", "Education", "Work", "Projects", "Skills"];
 
-  const handleDownloadPDF = () => {
-    if (resumeRef.current) {
-      html2pdf()
-        .set({
-          // margin: 0.5,
-          filename: `${resumeData.personalInfo.name || 'resume'}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        })
-        .from(resumeRef.current)
-        .save();
-    }
-  };
+
+  const handleDownloadViaPuppeteer = async () => {
+  if (!resumeRef.current) return;
+
+  const resumeHtml = resumeRef.current.innerHTML; // Use only inner content
+
+  const response = await fetch("http://localhost:4000/generate-pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      resumeHtml,
+      fileName: resumeData.personalInfo.name || "resume",
+    }),
+  });
+
+  if (!response.ok) {
+    alert("PDF generation failed.");
+    return;
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${resumeData.personalInfo.name || "resume"}.pdf`;
+  link.click();
+  window.URL.revokeObjectURL(url);
+};
+
+
   const normalizeArray = (arr, fallback = {}) =>
   Array.isArray(arr)
     ? arr.map((entry) => ({
@@ -117,12 +133,13 @@ useEffect(() => {
       <div className="lg:w-1/2 space-y-6">
         <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
           <h2 className="text-xl font-bold text-[#1f2937]">Resume Builder</h2>
+          
           <button
-            onClick={handleDownloadPDF}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          >
-            Download PDF
-          </button>
+      onClick={handleDownloadViaPuppeteer}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+    >
+      Download PDF
+    </button>
         </div>
 
         
@@ -224,78 +241,85 @@ useEffect(() => {
             </div>
 
 
+
             {/* Employment Section */}
             {resumeData.employment.length > 0 && (
-              <Section title="Employment">
-                {resumeData.employment.map((emp) => (
-                  <div key={emp.id} className="mb-3">
-                    <div className="flex justify-between font-bold text-[#374151]">
-                      <span>{emp.title}{emp.company && `, ${emp.company}`}</span>
-                      <span>{emp.duration}</span>
+              <div className="resume-section">
+                <Section title="Employment">
+                  {resumeData.employment.map((emp) => (
+                    <div key={emp.id} className="mb-3">
+                      <div className="flex justify-between font-bold text-[#374151]">
+                        <span>{emp.title}{emp.company && `, ${emp.company}`}</span>
+                        <span>{emp.duration}</span>
+                      </div>
+                      {emp.bullets.filter(b => b.trim()).length > 0 && (
+                        <ul className="list-disc ml-5 mt-1">
+                          {emp.bullets.filter(b => b.trim()).map((b, i) => (
+                            <li key={i} className="text-[#374151]">{b}</li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
-                    {emp.bullets.filter(b => b.trim()).length > 0 && (
-                      <ul className="list-disc ml-5 mt-1">
-                        {emp.bullets.filter(b => b.trim()).map((b, i) => (
-                          <li key={i} className="text-[#374151]">{b}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </Section>
+                  ))}
+                </Section>
+              </div>
             )}
 
             {/* Education Section */}
             {Array.isArray(resumeData.education) && resumeData.education.length > 0 && (
-              <Section title="Education">
-                {resumeData.education.map((edu, idx) => (
-                  <div key={idx} className="mb-2">
-                    <div className="flex justify-between font-bold text-[#374151]">
-                      <span>{edu.school || "University Name"}</span>
-                      <span>{edu.duration}</span>
-                    </div>
-                    {edu.degree && (
-                      <p className="text-[#374151]">
-                        {edu.degree}
-                        {edu.gpa && ` | GPA: ${edu.gpa}`}
-                      </p>
-                    )}
-                    {edu.location && (
-                      <p className="italic text-[#374151]">{edu.location}</p>
-                    )}
-                    {Array.isArray(edu.coursework) && edu.coursework.length > 0 && (
-                      <div className="mt-1">
-                        <span className="font-medium">Relevant Coursework: </span>
-                        <span className="text-[#374151]">{edu.coursework.join(", ")}</span>
+              <div className="resume-section page-break">
+                <Section title="Education">
+                  {resumeData.education.map((edu, idx) => (
+                    <div key={idx} className="mb-2">
+                      <div className="flex justify-between font-bold text-[#374151]">
+                        <span>{edu.school || "University Name"}</span>
+                        <span>{edu.duration}</span>
                       </div>
-                    )}
-                  </div>
-                ))}
-              </Section>
+                      {edu.degree && (
+                        <p className="text-[#374151]">
+                          {edu.degree}
+                          {edu.gpa && ` | GPA: ${edu.gpa}`}
+                        </p>
+                      )}
+                      {edu.location && (
+                        <p className="italic text-[#374151]">{edu.location}</p>
+                      )}
+                      {Array.isArray(edu.coursework) && edu.coursework.length > 0 && (
+                        <div className="mt-1">
+                          <span className="font-medium">Relevant Coursework: </span>
+                          <span className="text-[#374151]">{edu.coursework.join(", ")}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </Section>
+              </div>
             )}
 
             {/* Projects Section */}
             {resumeData.projects.length > 0 && (
-              <Section title="Technical Experience">
-                {resumeData.projects.map((proj) => (
-                  <div key={proj.id} className="mb-3">
-                    <div className="flex justify-between font-semibold text-[#374151]">
-                      <span>{proj.name}</span>
-                      <span>{proj.duration}</span>
+              <div className="resume-section page-break">
+                <Section title="Technical Experience">
+                  {resumeData.projects.map((proj) => (
+                    <div key={proj.id} className="mb-3">
+                      <div className="flex justify-between font-semibold text-[#374151]">
+                        <span>{proj.name}</span>
+                        <span>{proj.duration}</span>
+                      </div>
+                      {proj.description && (
+                        <p className="italic text-[#374151] mt-1">{proj.description}</p>
+                      )}
+                      {proj.bullets.filter(b => b.trim()).length > 0 && (
+                        <ul className="list-disc ml-5 mt-1">
+                          {proj.bullets.filter(b => b.trim()).map((b, i) => (
+                            <li key={i} className="text-[#374151]">{b}</li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
-                    {proj.description && (
-                      <p className="italic text-[#374151] mt-1">{proj.description}</p>
-                    )}
-                    {proj.bullets.filter(b => b.trim()).length > 0 && (
-                      <ul className="list-disc ml-5 mt-1">
-                        {proj.bullets.filter(b => b.trim()).map((b, i) => (
-                          <li key={i} className="text-[#374151]">{b}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </Section>
+                  ))}
+                </Section>
+              </div>
             )}
 
             {/* Additional Experience Section */}
