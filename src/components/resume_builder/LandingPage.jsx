@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FilePlus, UploadCloud, Loader2 } from "lucide-react";
 import Sidebar from "../Sidebar";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -10,17 +11,22 @@ const LandingPage = () => {
   const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    const allowedTypes = ['.pdf', '.docx', '.doc'];
+    const isValidType = allowedTypes.some(ext => file.name && file.name.toLowerCase().endsWith(ext));
+    if (!isValidType || file.size > 5 * 1024 * 1024) {
+      alert("Only PDF, DOCX or DOC files under 5MB are allowed.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("resume", file);
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/parse-resume", {
+      const res = await fetch(`${BASE_URL}/api/parse-resume`, {
         method: "POST",
         body: formData,
       });
-
       if (!res.ok) throw new Error("Parsing failed");
       const parsed = await res.json();
       navigate("/resume", { state: { parsedData: parsed } });

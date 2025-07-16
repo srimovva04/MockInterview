@@ -13,7 +13,7 @@ const UploadResume = () => {
     if (!file) return alert("Please select a PDF resume");
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("resume", file);
     formData.append("job_description", "Software Developer");
 
     try {

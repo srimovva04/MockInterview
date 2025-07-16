@@ -1,60 +1,128 @@
 import { Plus, Trash2 } from 'lucide-react';
 
+import React, { useState, useEffect } from 'react';
+
 export const PersonalInfoForm = ({ data, onChange }) => {
+  const [errors, setErrors] = useState({});
+
   const handleChange = (field, value) => {
     onChange({ ...data, [field]: value });
+
+    // Live validation
+    switch (field) {
+      case 'name':
+        setErrors((prev) => ({
+          ...prev,
+          name: /^[a-zA-Z\s]{2,}$/.test(value) ? '' : 'Enter a valid full name',
+        }));
+        break;
+      case 'email':
+        setErrors((prev) => ({
+          ...prev,
+          email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+            ? ''
+            : 'Enter a valid email address',
+        }));
+        break;
+      case 'phone':
+        const digits = value.replace(/\D/g, '');
+        setErrors((prev) => ({
+          ...prev,
+          phone: digits.length >= 10 ? '' : 'Phone number must have at least 10 digits',
+        }));
+        break;
+      case 'city':
+        setErrors((prev) => ({
+          ...prev,
+          city: /^[a-zA-Z\s.,'-]{2,}$/.test(value)
+            ? ''
+            : 'Enter a valid city name',
+        }));
+        break;
+      case 'country':
+        setErrors((prev) => ({
+          ...prev,
+          country: /^[a-zA-Z\s.,'-]{2,}$/.test(value)
+            ? ''
+            : 'Enter a valid country name',
+        }));
+        break;
+      default:
+        break;
+    }
   };
 
   return (
     <div className="space-y-4">
+      {/* Full Name */}
       <div>
-        <label className="block text-sm font-medium text-[#374151]-700 mb-1">Full Name</label>
+        <label className="block text-sm font-medium text-[#374151] mb-1">Full Name</label>
         <input
-          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={`w-full p-3 border rounded-md focus:ring-2 ${
+            errors.name ? 'border-red-500 ring-red-400' : 'border-[#374151] focus:ring-blue-500'
+          }`}
           value={data.name}
           onChange={(e) => handleChange('name', e.target.value)}
           placeholder="Enter your full name"
         />
+        {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
       </div>
 
+      {/* City */}
       <div>
         <label className="block text-sm font-medium text-[#374151] mb-1">City</label>
         <input
-          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={`w-full p-3 border rounded-md focus:ring-2 ${
+            errors.city ? 'border-red-500 ring-red-400' : 'border-[#374151] focus:ring-blue-500'
+          }`}
           value={data.city}
           onChange={(e) => handleChange('city', e.target.value)}
           placeholder="Mumbai"
         />
+        {errors.city && <p className="text-red-600 text-sm mt-1">{errors.city}</p>}
       </div>
 
-<div>
+      {/* Country */}
+      <div>
         <label className="block text-sm font-medium text-[#374151] mb-1">Country</label>
         <input
-          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={`w-full p-3 border rounded-md focus:ring-2 ${
+            errors.country ? 'border-red-500 ring-red-400' : 'border-[#374151] focus:ring-blue-500'
+          }`}
           value={data.country}
           onChange={(e) => handleChange('country', e.target.value)}
           placeholder="India"
         />
+        {errors.country && <p className="text-red-600 text-sm mt-1">{errors.country}</p>}
       </div>
+
+      {/* Phone Number */}
       <div>
         <label className="block text-sm font-medium text-[#374151] mb-1">Phone Number</label>
         <input
-          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={`w-full p-3 border rounded-md focus:ring-2 ${
+            errors.phone ? 'border-red-500 ring-red-400' : 'border-[#374151] focus:ring-blue-500'
+          }`}
           value={data.phone}
           onChange={(e) => handleChange('phone', e.target.value)}
           placeholder="(555) 555-1212"
         />
+        {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
       </div>
 
+      {/* Email */}
       <div>
         <label className="block text-sm font-medium text-[#374151] mb-1">Email Address</label>
         <input
-          className="w-full p-3 border border-[#374151] rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           type="email"
+          className={`w-full p-3 border rounded-md focus:ring-2 ${
+            errors.email ? 'border-red-500 ring-red-400' : 'border-[#374151] focus:ring-blue-500'
+          }`}
           value={data.email}
           onChange={(e) => handleChange('email', e.target.value)}
           placeholder="your.email@example.com"
         />
+        {errors.email && <p className="text-red-600 text-sm mt-1">{errors.email}</p>}
       </div>
     </div>
   );

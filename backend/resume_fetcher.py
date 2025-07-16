@@ -3,9 +3,25 @@ from flask_cors import CORS
 import os, uuid
 import pdfplumber
 import google.generativeai as genai
+from werkzeug.utils import secure_filename
+from werkzeug.exceptions import RequestEntityTooLarge
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import json
 
 app = Flask(__name__)
-CORS(app)
+app.config.update(
+    SESSION_COOKIE_SECURE=True,      # ✅ Only sent over HTTPS
+    SESSION_COOKIE_HTTPONLY=True,    # ✅ Not accessible via JavaScript
+    SESSION_COOKIE_SAMESITE='Lax'    # ✅ Prevents CSRF for most cases
+)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["100 per hour"]
+)
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # Limit uploads to 5 MB
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 api_key = os.getenv("GEMINI_API_KEY")   
@@ -93,37 +109,47 @@ Resume text:
     else:
         return ""
     
+ALLOWED_EXTENSIONS = {'pdf','docx','doc'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@limiter.limit("10 per minute")
 @app.route("/api/parse-resume", methods=["POST"])
 def parse_resume():
     if "resume" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
 
     file = request.files["resume"]
-    filename = f"{uuid.uuid4().hex}_{file.filename}"
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(filepath)
+
+    if not allowed_file(file.filename):
+        return jsonify({"error": "Invalid file format. Only PDF,DOCX,DOC files allowed."}), 400
 
     try:
-        text = extract_text_from_pdf(filepath)
-        import json
-        gemini_json = call_gemini_resume_parser(text)
-        print("🔍 Gemini output:\n", gemini_json)
+        filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
 
-# Strip markdown-style code block if present
+        text = extract_text_from_pdf(filepath)
+        gemini_json = call_gemini_resume_parser(text)
+
+        # Clean markdown wrapping
         cleaned = gemini_json.strip()
         if cleaned.startswith("```json"):
             cleaned = cleaned.replace("```json", "").replace("```", "").strip()
         elif cleaned.startswith("```"):
             cleaned = cleaned.replace("```", "").strip()
 
-# Now parse
         parsed = json.loads(cleaned)
-
         return jsonify(parsed)
+
     except Exception as e:
         print("Error during resume parsing:", e)
         return jsonify({"error": str(e)}), 500
     
+@app.errorhandler(RequestEntityTooLarge)
+def handle_large_file(e):
+    return jsonify({"error": "File is too large. Maximum allowed size is 5 MB."}), 413
 if __name__ == '__main__':
     app.run(debug=True)
 
