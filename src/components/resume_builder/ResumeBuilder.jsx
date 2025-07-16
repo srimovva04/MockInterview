@@ -6,10 +6,27 @@ import html2pdf from "html2pdf.js";
 import { PersonalInfoForm, EducationForm, EmploymentForm, ProjectsForm, SkillsForm } from "./forms.jsx";
 import { useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { ClassicTemplate,ResumePreview } from "./Template.jsx";
+
+const templates = {
+  classic: {
+    name: "Classic",
+    description: "Traditional layout",
+    component: ClassicTemplate
+  },
+  preview: {
+    name: "Modern",
+    description: "Modern layout",
+    component: ResumePreview
+  },
+
+};
 
 const ResumeBuilder = () => {
   const location = useLocation();
-  const [template, setTemplate] = useState("classic"); // NEW
+  const [selectedTemplate, setSelectedTemplate] = useState("classic");
+  
+  // const [template, setTemplate] = useState("classic"); // NEW
   const parsed = location.state?.parsedData;
   const [tab, setTab] = useState("Personal");
   const [resumeData, setResumeData] = useState({
@@ -128,6 +145,9 @@ useEffect(() => {
   }
 };
 
+
+  const TemplateComponent = templates[selectedTemplate].component;
+
   return (
     <div className="flex flex-col lg:flex-row gap-8 p-6 bg-[#f9fafb] min-h-screen">
       <div className="lg:w-1/2 space-y-6">
@@ -141,6 +161,28 @@ useEffect(() => {
       Download PDF
     </button>
         </div>
+                  {/* Template Selector */}
+          <div>
+            <label className="block text-sm font-medium text-[#374151] mb-2">
+              Choose Template
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {Object.entries(templates).map(([key, template]) => (
+                <button
+                  key={key}
+                  onClick={() => setSelectedTemplate(key)}
+                  className={`p-3 rounded-md border text-sm transition-colors ${
+                    selectedTemplate === key
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-[#374151] border-[#d1d5db] hover:bg-[#f9fafb]"
+                  }`}
+                >
+                  <div className="font-medium">{template.name}</div>
+                  <div className="text-xs opacity-75 mt-1">{template.description}</div>
+                </button>
+              ))}
+            </div>
+          </div>
 
         
         <div className="bg-white rounded-lg shadow-sm p-1">
@@ -212,143 +254,23 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="lg:w-1/2">
-        <div className="bg-white rounded-lg shadow-sm p-2">
-          <div
-            ref={resumeRef}
-            className="bg-white text-black p-4 border border-[#e5e7eb] rounded-lg text-sm font-serif leading-tight max-w-full mx-auto"
-            style={{ minHeight: '11in', width: '8.5in', maxWidth: '100%' }}
-          >
-            <div className="text-center mb-4">
-              <h1 className="text-2xl font-bold uppercase tracking-wide text-black">
-                {resumeData.personalInfo.name || "Your Name"}
-              </h1>
-              <div className="text-xs mt-1 text-[#374151]">
-                {(resumeData.personalInfo.city || resumeData.personalInfo.country) && (
-  <p>
-    {[resumeData.personalInfo.city, resumeData.personalInfo.country].filter(Boolean).join(", ")}
-  </p>
-)}
-
-                {(resumeData.personalInfo.phone || resumeData.personalInfo.email) && (
-                  <p>
-                    {resumeData.personalInfo.phone}
-                    {resumeData.personalInfo.email &&
-                      ` | ${resumeData.personalInfo.email}`}
-                  </p>
-                )}
-              </div>
+      
+      {/* Resume Preview */}
+      <div>
+        <div className="">
+          <div className="mb-4 flex justify-between items-center px-2">
+            <h3 className="text-sm font-medium text-[#6b7280]">Preview</h3>
+            <div className="text-xs text-[#6b7280]">
+              Template: {templates[selectedTemplate].name}
             </div>
-
-
-
-            {/* Employment Section */}
-            {resumeData.employment.length > 0 && (
-              <div className="resume-section">
-                <Section title="Employment">
-                  {resumeData.employment.map((emp) => (
-                    <div key={emp.id} className="mb-3">
-                      <div className="flex justify-between font-bold text-[#374151]">
-                        <span>{emp.title}{emp.company && `, ${emp.company}`}</span>
-                        <span>{emp.duration}</span>
-                      </div>
-                      {emp.bullets.filter(b => b.trim()).length > 0 && (
-                        <ul className="list-disc ml-5 mt-1">
-                          {emp.bullets.filter(b => b.trim()).map((b, i) => (
-                            <li key={i} className="text-[#374151]">{b}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  ))}
-                </Section>
-              </div>
-            )}
-
-            {/* Education Section */}
-            {Array.isArray(resumeData.education) && resumeData.education.length > 0 && (
-              <div className="resume-section page-break">
-                <Section title="Education">
-                  {resumeData.education.map((edu, idx) => (
-                    <div key={idx} className="mb-2">
-                      <div className="flex justify-between font-bold text-[#374151]">
-                        <span>{edu.school || "University Name"}</span>
-                        <span>{edu.duration}</span>
-                      </div>
-                      {edu.degree && (
-                        <p className="text-[#374151]">
-                          {edu.degree}
-                          {edu.gpa && ` | GPA: ${edu.gpa}`}
-                        </p>
-                      )}
-                      {edu.location && (
-                        <p className="italic text-[#374151]">{edu.location}</p>
-                      )}
-                      {Array.isArray(edu.coursework) && edu.coursework.length > 0 && (
-                        <div className="mt-1">
-                          <span className="font-medium">Relevant Coursework: </span>
-                          <span className="text-[#374151]">{edu.coursework.join(", ")}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </Section>
-              </div>
-            )}
-
-            {/* Projects Section */}
-            {resumeData.projects.length > 0 && (
-              <div className="resume-section page-break">
-                <Section title="Technical Experience">
-                  {resumeData.projects.map((proj) => (
-                    <div key={proj.id} className="mb-3">
-                      <div className="flex justify-between font-semibold text-[#374151]">
-                        <span>{proj.name}</span>
-                        <span>{proj.duration}</span>
-                      </div>
-                      {proj.description && (
-                        <p className="italic text-[#374151] mt-1">{proj.description}</p>
-                      )}
-                      {proj.bullets.filter(b => b.trim()).length > 0 && (
-                        <ul className="list-disc ml-5 mt-1">
-                          {proj.bullets.filter(b => b.trim()).map((b, i) => (
-                            <li key={i} className="text-[#374151]">{b}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  ))}
-                </Section>
-              </div>
-            )}
-
-            {/* Additional Experience Section */}
-            {resumeData.additionalExperience.filter(exp => exp.trim()).length > 0 && (
-              <Section title="Additional Experience & Awards">
-                {resumeData.additionalExperience.filter(exp => exp.trim()).map((exp, i) => (
-                  <p key={i} className="text-[#374151] mb-1">• {exp}</p>
-                ))}
-              </Section>
-            )}
-
-            {/* Skills Section */}
-            {(resumeData.skills.languages.length > 0 || resumeData.skills.tools.length > 0) && (
-              <Section title="Languages and Technologies">
-                {resumeData.skills.languages.length > 0 && (
-                  <p className="text-[#374151] mb-1">
-                    <strong>Languages:</strong> {resumeData.skills.languages.join(", ")}
-                  </p>
-                )}
-                {resumeData.skills.tools.length > 0 && (
-                  <p className="text-[#374151]">
-                    <strong>Tools & Technologies:</strong> {resumeData.skills.tools.join(", ")}
-                  </p>
-                )}
-              </Section>
-            )}
+          </div>
+          
+          <div ref={resumeRef}>
+            <TemplateComponent resumeData={resumeData} />
           </div>
         </div>
       </div>
+
     </div>
   );
 };

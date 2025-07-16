@@ -41,7 +41,6 @@ app.post("/generate-pdf", async (req, res) => {
             font-size: 1.5rem;
             font-weight: 900;
             text-transform: uppercase;
-            text-align: center;
           }
 
           h3 {
