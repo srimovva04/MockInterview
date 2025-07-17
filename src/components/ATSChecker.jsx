@@ -9,8 +9,9 @@ import {
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "./utils/supabaseClient.js";
+import { UserAuth } from "./Auth/AuthContext";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 
 const ATSScanner = () => {
   const navigate = useNavigate();
@@ -21,8 +22,18 @@ const ATSScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [errors, setErrors] = useState({});
 
+ 
+  const [showDocCenterModal, setShowDocCenterModal] = useState({ for: null }); // "resume" only here
+  const [docFiles, setDocFiles] = useState([]);
+  const [docCenterLoading, setDocCenterLoading] = useState(false);
+
   const resumeInputRef = useRef(null);
   const jobDescInputRef = useRef(null);
+
+
+  const { session } = UserAuth();
+  const userId = session?.user?.id;
+
 
   const validateFile = (file, maxSize = 5 * 1024 * 1024) => {
     if (!file) return "File is required";
@@ -36,6 +47,7 @@ const ATSScanner = () => {
     const error = validateFile(file);
     setResumeFile(error ? null : file);
     setErrors((prev) => ({ ...prev, resume: error }));
+    setShowDocCenterModal({ for: null });
   };
 
   const handleJobDescUpload = (e) => {
@@ -48,13 +60,49 @@ const ATSScanner = () => {
   const removeFile = (type) => {
     if (type === "resume") {
       setResumeFile(null);
-      resumeInputRef.current.value = "";
+      if (resumeInputRef.current) resumeInputRef.current.value = "";
       setErrors((prev) => ({ ...prev, resume: null }));
     } else {
       setJobDescFile(null);
-      jobDescInputRef.current.value = "";
+      if (jobDescInputRef.current) jobDescInputRef.current.value = "";
       setErrors((prev) => ({ ...prev, jobDesc: null }));
     }
+  };
+
+  const handleUploadAreaClick = (which) => {
+    if (which === "resume") {
+      setShowDocCenterModal({ for: which });
+      setDocCenterLoading(true);
+      if (userId) {
+        supabase
+          .storage
+          .from("resumes")
+          .list(`${userId}/`)
+          .then(({ data, error }) => {
+            setDocFiles(data?.filter(f => f.name && !f.name.endsWith("/")) || []);
+          }).finally(() => setDocCenterLoading(false));
+      } else {
+        setDocFiles([]);
+        setDocCenterLoading(false);
+      }
+    }
+  };
+
+  const handleSelectDocCenterFile = async (fileName) => {
+    if (!userId || !fileName) return;
+    setDocCenterLoading(true);
+    const { data, error } = await supabase.storage
+      .from("resumes")
+      .createSignedUrl(`${userId}/${fileName}`, 60);
+    if (data?.signedUrl && !error) {
+      const res = await fetch(data.signedUrl);
+      const blob = await res.blob();
+      const fileObj = new File([blob], fileName, { type: "application/pdf" });
+      setResumeFile(fileObj);
+      setErrors(prev => ({ ...prev, resume: null }));
+    }
+    setShowDocCenterModal({ for: null });
+    setDocCenterLoading(false);
   };
 
   const handleScan = async () => {
@@ -64,7 +112,6 @@ const ATSScanner = () => {
       newErrors.jobDescText = "Job description is required";
     else if (inputMethod === "file" && !jobDescFile)
       newErrors.jobDesc = "Job description file is required";
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -76,7 +123,9 @@ const ATSScanner = () => {
       formData.append("file", resumeFile);
       formData.append(
         "job_description",
-        inputMethod === "text" ? jobDescText : "JD from file not implemented"
+        inputMethod === "text"
+          ? jobDescText
+          : "JD from file not implemented"
       );
 
       const response = await fetch(`${BASE_URL}/upload_resume`, {
@@ -101,10 +150,18 @@ const ATSScanner = () => {
     onUpload,
     inputRef,
     error,
-    accept = ".pdf",
     description = "Upload PDF file (Max 5MB)",
+    which, 
+    disableDocCenter = false,
   }) => (
     <div className="relative">
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf"
+        onChange={onUpload}
+        className="hidden"
+      />
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 cursor-pointer hover:border-blue-400 hover:bg-blue-50 ${
           file
@@ -113,16 +170,12 @@ const ATSScanner = () => {
             ? "border-red-400 bg-red-50"
             : "border-gray-300 bg-gray-50"
         }`}
-        onClick={() => inputRef.current?.click()}
+        onClick={() =>
+          disableDocCenter
+            ? inputRef.current?.click()
+            : handleUploadAreaClick(which)
+        }
       >
-        <input
-          ref={inputRef}
-          type="file"
-          accept={accept}
-          onChange={onUpload}
-          className="hidden"
-        />
-
         <div className="flex flex-col items-center space-y-4">
           <div
             className={`p-3 rounded-full ${
@@ -137,25 +190,18 @@ const ATSScanner = () => {
               <Icon className="w-8 h-8 text-blue-600" />
             )}
           </div>
-
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              {title}
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
             {file ? (
               <div className="space-y-2">
-                <p className="text-sm text-green-600 font-medium">
-                  {file.name}
-                </p>
+                <p className="text-sm text-green-600 font-medium">{file.name}</p>
                 <p className="text-xs text-gray-500">
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    removeFile(
-                      title.toLowerCase().includes("resume") ? "resume" : "job"
-                    );
+                    removeFile(which);
                   }}
                   className="inline-flex items-center space-x-1 text-sm text-red-600 hover:text-red-800"
                 >
@@ -178,9 +224,73 @@ const ATSScanner = () => {
     </div>
   );
 
+  
+  const DocumentCenterPopover = () =>
+    showDocCenterModal.for === "resume" ? (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+        <div className="bg-white p-6 rounded-xl shadow-2xl border max-w-md w-full relative animate-fade-in">
+          <button
+            aria-label="Close"
+            className="absolute top-2 right-4 text-gray-400 hover:text-gray-700"
+            onClick={() => setShowDocCenterModal({ for: null })}
+          >
+            <X className="h-6 w-6" />
+          </button>
+          <h3 className="text-lg font-bold mb-3 text-gray-800">Upload Resume</h3>
+          <div className="grid gap-3">
+            <button
+              onClick={() => {
+                if (showDocCenterModal.for === "resume")
+                  resumeInputRef.current?.click();
+              }}
+              className="flex items-center gap-3 justify-center py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm font-medium text-base transition"
+            >
+              <Scan className="h-5 w-5" />
+              Upload from device
+            </button>
+          </div>
+          <p className="text-sm text-slate-500 my-2 text-center">
+            Or, choose from your Document Center
+          </p>
+          <div className="bg-slate-50 rounded-lg border p-3 max-h-56 overflow-y-auto">
+            {docCenterLoading ? (
+              <div className="text-sm text-gray-400 text-center py-6">
+                Loading files...
+              </div>
+            ) : docFiles.length === 0 ? (
+              <div className="text-xs text-gray-400 italic text-center py-6">
+                No files found in your Document Center.
+              </div>
+            ) : (
+              <ul>
+                {docFiles.map((file) => (
+                  <li
+                    key={file.name}
+                    className="flex items-center gap-3 cursor-pointer rounded p-2 hover:bg-slate-100 transition"
+                    onClick={() => handleSelectDocCenterFile(file.name)}
+                  >
+                    <FileText className="h-5 w-5 text-blue-500" />
+                    <span className="text-sm text-slate-800 truncate flex-1">
+                      {file.name}
+                    </span>
+                    {file.metadata?.size !== undefined && (
+                      <span className="text-xs text-slate-500 ml-2">
+                        {(Math.round(file.metadata.size / 1024) || 1)} KB
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
+    ) : null;
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
+      {DocumentCenterPopover()}
       <div className="flex-1 ml-64 overflow-y-auto bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-12">
@@ -206,6 +316,7 @@ const ATSScanner = () => {
                   onUpload={handleResumeUpload}
                   inputRef={resumeInputRef}
                   error={errors.resume}
+                  which="resume"
                 />
 
                 <div>
@@ -250,9 +361,7 @@ const ATSScanner = () => {
                         }}
                         placeholder="Paste the job description here..."
                         className={`w-full h-48 p-4 border-2 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.jobDescText
-                            ? "border-red-400"
-                            : "border-gray-300"
+                          errors.jobDescText ? "border-red-400" : "border-gray-300"
                         }`}
                       />
                       {errors.jobDescText && (
@@ -270,6 +379,8 @@ const ATSScanner = () => {
                       onUpload={handleJobDescUpload}
                       inputRef={jobDescInputRef}
                       error={errors.jobDesc}
+                      which="job"
+                      disableDocCenter={true} // disables document center modal
                     />
                   )}
                 </div>
@@ -287,7 +398,7 @@ const ATSScanner = () => {
                 >
                   {isScanning ? (
                     <>
-                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       <span>Scanning...</span>
                     </>
                   ) : (

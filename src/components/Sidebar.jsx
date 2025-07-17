@@ -15,6 +15,7 @@ import {
   Check,
   Scan,
   GraduationCap,
+  Layers  ,
 } from "lucide-react";
 import { supabase } from "./utils/supabaseClient";
 import { useLocation } from "react-router-dom";
@@ -79,7 +80,7 @@ const Sidebar = () => {
     },
     // { icon: BookOpen, label: "Preparation Hub", route: "/preparation-hub" },
     {
-      icon: FileText,
+      icon: Layers,
       label: "Document Center",
       active: false,
       path: "/document-center",

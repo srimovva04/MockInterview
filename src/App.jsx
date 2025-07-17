@@ -57,6 +57,7 @@ import SimulationsManager from "./components/admin/SimulationsManager";
 import Confirmation from "./components/admin/Confirmation";
 import LandingPage from "./components/resume_builder/LandingPage";
 import ResumeBuilder from "./components/resume_builder/ResumeBuilder";
+import DocumentCenter from "./components/document_center/DocumentCenter";
 
 function App() {
   const { session } = UserAuth();
@@ -170,6 +171,8 @@ function App() {
         }
       />
 
+      
+
       <Route
         path="/simulation/:id"
         element={
@@ -217,7 +220,19 @@ function App() {
           <ResumeBuilder/>
         }
       />
-      <Route path="/land" element={<LandingPage />} />
+      <Route 
+        path="/land" 
+        element={
+          <LandingPage />
+        } 
+      />
+      
+      <Route path="/document-center" element={
+        // <ProtectedRoute>
+          <DocumentCenter />
+        // </ProtectedRoute>
+        }
+      />
     </Routes>
     
   );
