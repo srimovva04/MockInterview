@@ -5,6 +5,8 @@ const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [session, setSession] = useState(null); // ✅ default is null not "Hey"
+  
+  const [loading, setLoading] = useState(true); 
 
   const signUpNewUser = async (email, password, fullName, phoneNo) => {
     const { data, error } = await supabase.auth.signUp({
@@ -63,20 +65,44 @@ export const AuthContextProvider = ({ children }) => {
     setSession(null);
   };
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+  // useEffect(() => {
+  //   supabase.auth.getSession().then(({ data: { session } }) => {
+  //     setSession(session);
+  //   });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
+  //   supabase.auth.onAuthStateChange((_event, session) => {
+  //     setSession(session);
+  //   });
+  // }, []);
+
+
+   useEffect(() => {
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setSession(session);
-    });
+      setLoading(false); // <-- Set loading to false after session check
+    };
+
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   return (
-    <AuthContext.Provider
-      value={{ session, signInUser, signUpNewUser, signOut }}
-    >
+    // <AuthContext.Provider
+    //   value={{ session, signInUser, signUpNewUser, signOut }}
+    // >
+    <AuthContext.Provider value={{ session, signInUser, signUpNewUser, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -157,7 +157,7 @@ function App() {
         path="/preparation-hub"
         element={
           <ProtectedRoute>
-            <PreparationHub />
+            <PracticingQuestions />
           </ProtectedRoute>
         }
       />
@@ -228,9 +228,9 @@ function App() {
       />
       
       <Route path="/document-center" element={
-        // <ProtectedRoute>
+        <ProtectedRoute>
           <DocumentCenter />
-        // </ProtectedRoute>
+        </ProtectedRoute>
         }
       />
     </Routes>
