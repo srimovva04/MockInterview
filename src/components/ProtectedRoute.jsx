@@ -14,9 +14,22 @@ import { UserAuth } from "./Auth/AuthContext";
 
 // export default ProtectedRoute;
 
+// const ProtectedRoute = ({ children }) => {
+//   const { session } = UserAuth();
+//   console.log("ProtectedRoute - session:", session); // 🟡 Add this
+
+//   if (!session) {
+//     return <Navigate to="/signin" />;
+//   }
+
+//   return children;
+// };
+// export default ProtectedRoute;
+
 const ProtectedRoute = ({ children }) => {
-  const { session } = UserAuth();
-  console.log("ProtectedRoute - session:", session); // 🟡 Add this
+  const { session, loading } = UserAuth();
+
+  if (loading) return <div>Loading...</div>; // or a spinner
 
   if (!session) {
     return <Navigate to="/signin" />;
@@ -24,4 +37,5 @@ const ProtectedRoute = ({ children }) => {
 
   return children;
 };
+
 export default ProtectedRoute;

@@ -15,6 +15,8 @@ import {
   Check,
   Scan,
   GraduationCap,
+  Layers,
+  LogOut,
 } from "lucide-react";
 import { supabase } from "./utils/supabaseClient";
 import { useLocation } from "react-router-dom";
@@ -55,6 +57,12 @@ const Sidebar = () => {
     fetchRole();
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/signin");
+  };
+
+
   if (loading) return null;
 
   const userMenuItems = [
@@ -71,9 +79,15 @@ const Sidebar = () => {
       active: false,
       path: "/preparation-hub",
     },
-    // { icon: BookOpen, label: "Preparation Hub", route: "/preparation-hub" },
     {
       icon: FileText,
+      label: "Resume Builder",
+      active: false,
+      path: "/land",
+    },
+    // { icon: BookOpen, label: "Preparation Hub", route: "/preparation-hub" },
+    {
+      icon: Layers,
       label: "Document Center",
       active: false,
       path: "/document-center",
@@ -101,12 +115,6 @@ const Sidebar = () => {
       path: "/admin",
     },
     {
-      icon: ClipboardList,
-      label: "Add Entries",
-      active: false,
-      path: "/add-entries",
-    },
-    {
       icon: Check,
       label: "Task Confirmation",
       active: false,
@@ -118,8 +126,6 @@ const Sidebar = () => {
       active: false,
       path: "/edit-internship",
     },
-
-    { icon: Settings, label: "Manage App", active: false, path: "/manage-app" },
   ];
   const tools = [
     { icon: Cpu, label: "AI Material Generator", active: false },
@@ -130,7 +136,7 @@ const Sidebar = () => {
 
   return (
     <div className="w-64 h-screen bg-white shadow-md fixed left-0 top-0 z-10 flex flex-col justify-between">
-      {/* Top Section */}
+      {/* Top Section */} 
       <div>
         {/* Logo */}
         <div className="p-6 border-b border-blue-200">
@@ -145,7 +151,8 @@ const Sidebar = () => {
         </div>
 
         {/* Menu */}
-        <div className="p-4">
+        {/* <div className="p-4"> */}
+        <div className="p-4 overflow-y-auto max-h-[calc(100vh-280px)]">
           <h3 className="text-sm font-medium text-blue-800 mb-3">
             {role === "admin" ? "Admin Panel" : "Interview"}
           </h3>
@@ -175,6 +182,16 @@ const Sidebar = () => {
           <User className="w-5 h-5" />
           <span className="text-sm">{fullName}</span>
         </button>
+
+
+        <button
+          className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left text-red-600 hover:bg-red-100 transition"
+          onClick={handleLogout}
+        >
+          <LogOut className="w-5 h-5" />
+          <span className="text-sm">Logout</span>
+        </button>
+
         <button className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors hover:bg-blue-100 hover:text-blue-900 text-gray-700">
           <BarChart3 className="w-5 h-5" />
           <span className="text-sm">Plan Usage & Other</span>
