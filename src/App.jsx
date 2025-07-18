@@ -49,7 +49,7 @@ import InternshipDashboard from "./components/internship/InternshipDashboard";
 import SimulationDetail from "./components/internship/SimulationDetail";
 import SimulationTaskPage from "./components/internship/SimulationTaskPage";
 import ProgressPage from "./components/internship/ProgressPage";
-import AtsBuilder from "./components/ats_builder/AtsBuilder";
+import ResumeFromScratch from "./components/resume_from_scratch/ResumeFromScratch";
 import ATSScanner from "./components/ATSChecker";
 import ScanResults from "./components/ScanResults";
 
@@ -235,7 +235,7 @@ function App() {
         }
       />
 
-      <Route path="/ats-builder" element={<AtsBuilder />} />
+      <Route path="/resume-from-scratch" element={<ResumeFromScratch />} />
     </Routes>
   );
 }

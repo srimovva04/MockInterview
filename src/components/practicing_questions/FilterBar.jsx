@@ -107,16 +107,16 @@ export default function FilterBar({ filters, setFilters }) {
 
   // Wrapper to add relative positioning + arrow icon
   const SelectWithArrow = ({ name, value, children }) => (
-    <div className="relative inline-block">
+    <div className="relative inline-block border border-blue-700 rounded ">
       <select
         name={name}
         onChange={handleChange}
         value={value}
-        className="p-2 pr-10 border rounded appearance-none"
+        className="p-2 pr-10 appearance-none text-blue-900"
       >
         {children}
       </select>
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 ">
         <ArrowIcon />
       </div>
     </div>
@@ -183,7 +183,7 @@ export default function FilterBar({ filters, setFilters }) {
         placeholder="Search"
         value={filters.search}
         onChange={handleChange}
-        className="p-2 border rounded w-64"
+        className="p-2 border border-blue-700 rounded rounded w-64 text-blue-900"
       />
     </div>
   );

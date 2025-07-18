@@ -62,7 +62,6 @@ const Sidebar = () => {
     navigate("/signin");
   };
 
-
   if (loading) return null;
 
   const userMenuItems = [
@@ -98,13 +97,6 @@ const Sidebar = () => {
       active: false,
       path: "/ats-checker",
     },
-
-    {
-      icon: FileText,
-      label: "Resume Generator",
-      active: false,
-      path: "/ats-builder",
-    },
   ];
 
   const adminMenuItems = [
@@ -136,7 +128,7 @@ const Sidebar = () => {
 
   return (
     <div className="w-64 h-screen bg-white shadow-md fixed left-0 top-0 z-10 flex flex-col justify-between">
-      {/* Top Section */} 
+      {/* Top Section */}
       <div>
         {/* Logo */}
         <div className="p-6 border-b border-blue-200">
@@ -182,7 +174,6 @@ const Sidebar = () => {
           <User className="w-5 h-5" />
           <span className="text-sm">{fullName}</span>
         </button>
-
 
         <button
           className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left text-red-600 hover:bg-red-100 transition"

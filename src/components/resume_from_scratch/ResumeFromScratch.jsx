@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Sidebar from "../Sidebar";
 
 const ResumeForm = () => {
   const [resumeType, setResumeType] = useState(null);
@@ -169,6 +170,7 @@ const ResumeForm = () => {
   if (showPopup) {
     return (
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_center,_#a1c4fd_0%,_#ffffff_100%)] bg-opacity-90 flex items-center justify-center z-50">
+        <Sidebar />
         <div className="bg-white p-10 rounded-2xl shadow-2xl text-center space-y-6 border border-blue-300 w-[95%] sm:w-[550px] md:w-[600px] animate-scaleIn">
           <h2 className="text-3xl font-bold text-blue-700">
             Choose Resume Type
@@ -204,6 +206,7 @@ const ResumeForm = () => {
 
   return (
     <div className="min-h-screen w-full bg-[radial-gradient(circle_at_center,_#a1c4fd_0%,_#ffffff_100%)] py-10 px-4">
+      <Sidebar />
       <form
         className="max-w-4xl mx-auto p-8 space-y-8 bg-white shadow-2xl rounded-xl"
         onSubmit={handleSubmit}

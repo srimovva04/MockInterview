@@ -205,7 +205,7 @@ const LandingPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Card 1 */}
               <div
-                onClick={() => navigate("/resume")}
+                onClick={() => navigate("/resume-from-scratch")}
                 className="cursor-pointer border border-gray-300 bg-white p-6 rounded-xl hover:shadow-xl hover:border-blue-500 transition group"
               >
                 <FilePlus className="mx-auto h-12 w-12 text-blue-600 group-hover:scale-110 transition-transform" />
