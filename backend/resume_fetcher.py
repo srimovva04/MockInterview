@@ -94,7 +94,7 @@ Instructions:
 - For the "education" field, extract **all education entries** found in the resume and return them as an array of objects, not just one.
 - For the "projects" section, return the tech stack as the only content inside "description" in the format: "Tech Stack: X, Y, Z".
 - For the "projects" section, only include 2 points of description for each project.
-- For the "experience section, include only 2 experience entries that are latest and explain each in 1 bullet point.
+- For the "experience section, include only 2 experience entries that are latest and explain each in 1 bullet point for 20-25 words.
 - For the "additionalExperience" section,describe each in 15 or less words such that it fits within 1 line of A4 Page
 - Don't include location if not present in the resume.
 Only return the JSON object — do not include ```json or explanation.

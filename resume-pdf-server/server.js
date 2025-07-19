@@ -30,11 +30,12 @@ app.post("/generate-pdf", async (req, res) => {
             color: #111827;
             letter-spacing: 0.01em;
           }
+          margin-bottom: 0 !important; /* Reduced bottom margin */
 
           .resume-wrapper {
-            width: 816px; /* 8.5in x 96 */
-            margin: auto;
-            padding: 0rem 2rem 2rem 0.5rem;
+           width: 100%;
+           margin: 0;
+           padding: 0;
           }
 
           h1 {
@@ -87,9 +88,14 @@ app.post("/generate-pdf", async (req, res) => {
 
     // Set PDF size to A4 (8.27in x 11.69in)
     const pdfBuffer = await page.pdf({
-      printBackground: true,
-      width: "8.27in",
-      height: "11.69in",
+      format: "A4", // Ensures exact A4 dimensions: 8.27in × 11.69in
+  printBackground: true,
+  margin: {
+    top: "0.2in",
+    bottom: "0.2in",
+    left: "0.25in",     // Adds space on the left
+    right: "0.25in",    // Adds space on the right
+  },
     });
 
     await browser.close();
