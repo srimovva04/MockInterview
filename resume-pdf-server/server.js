@@ -34,13 +34,15 @@ app.post("/generate-pdf", async (req, res) => {
           .resume-wrapper {
             width: 816px; /* 8.5in x 96 */
             margin: auto;
-            padding: 2rem;
+            padding: 0rem 2rem 2rem 0.5rem;
           }
 
           h1 {
             font-size: 1.5rem;
             font-weight: 900;
             text-transform: uppercase;
+            margin-top: 0.2rem; /* Add this */
+            margin-bottom: 0.5rem; /* Optional: reduce bottom spacing too */
           }
 
           h3 {
@@ -83,10 +85,11 @@ app.post("/generate-pdf", async (req, res) => {
 
     const height = await page.evaluate(() => document.documentElement.scrollHeight);
 
+    // Set PDF size to A4 (8.27in x 11.69in)
     const pdfBuffer = await page.pdf({
       printBackground: true,
-      width: "8.5in",
-      height: `${height}px`,
+      width: "8.27in",
+      height: "11.69in",
     });
 
     await browser.close();

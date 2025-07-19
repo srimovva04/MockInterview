@@ -11,6 +11,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const PDF_API_URL = import.meta.env.VITE_PDF_API_URL;
 
 
+
 const templates = {
   classic: {
     name: "Classic",
@@ -28,6 +29,10 @@ const templates = {
 
 
 const ResumeBuilder = () => {
+  const [resumeLength, setResumeLength] = useState("1"); // "1" or "2"
+  const [warning, setWarning] = useState("");
+  const maxEmployment = resumeLength === "1" ? 2 : 10;
+  const maxProjects = resumeLength === "1" ? 3 : 10;
   const location = useLocation();
   const [selectedTemplate, setSelectedTemplate] = useState("classic");
   
@@ -151,9 +156,11 @@ useEffect(() => {
 };
 
 
+
   const TemplateComponent = templates[selectedTemplate].component;
 
   return (
+    
     <div className="flex flex-col lg:flex-row gap-8 p-6 bg-[#f9fafb] min-h-screen">
       <div className="lg:w-1/2 space-y-6">
         <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
@@ -168,6 +175,26 @@ useEffect(() => {
         </div>
                   {/* Template Selector */}
           <div>
+            <div className="mb-2">
+  <label className="block text-sm font-medium text-[#374151] mb-2">Resume Length</label>
+  <div className="flex gap-2">
+    <button
+      className={`px-3 py-2 rounded-md border text-sm font-medium ${resumeLength === "1" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-[#374151] border-[#d1d5db] hover:bg-[#f9fafb]"}`}
+      onClick={() => setResumeLength("1")}
+    >
+      1 Page (Fresher)
+    </button>
+    <button
+      className={`px-3 py-2 rounded-md border text-sm font-medium ${resumeLength === "2" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-[#374151] border-[#d1d5db] hover:bg-[#f9fafb]"}`}
+      onClick={() => setResumeLength("2")}
+    >
+      2 Page (Experienced)
+    </button>
+  </div>
+</div>
+{warning && (
+  <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded mt-2 text-sm">{warning}</div>
+)}
             <label className="block text-sm font-medium text-[#374151] mb-2">
               Choose Template
             </label>
@@ -229,9 +256,14 @@ useEffect(() => {
             <EmploymentForm
               data={resumeData.employment}
               additionalExperience={resumeData.additionalExperience}
-              onChange={(d) =>
-                setResumeData((prev) => ({ ...prev, employment: d }))
-              }
+              onChange={(d) => {
+    if (resumeLength === "1" && d.length > maxEmployment) {
+      setWarning("1-page resume: Only 2 work experiences allowed for fresher resumes.");
+      return;
+    }
+    setWarning("");
+    setResumeData((prev) => ({ ...prev, employment: d }));
+  }}
               onAdditionalExperienceChange={(d) =>
                 setResumeData((prev) => ({
                   ...prev,
@@ -243,9 +275,14 @@ useEffect(() => {
           {tab === "Projects" && (
             <ProjectsForm
               data={resumeData.projects}
-              onChange={(d) =>
-                setResumeData((prev) => ({ ...prev, projects: d }))
-              }
+              onChange={(d) => {
+    if (resumeLength === "1" && d.length > maxProjects) {
+      setWarning("1-page resume: Only 3 projects allowed for fresher resumes.");
+      return;
+    }
+    setWarning("");
+    setResumeData((prev) => ({ ...prev, projects: d }));
+  }}
             />
           )}
           {tab === "Skills" && (
@@ -271,7 +308,9 @@ useEffect(() => {
           </div>
           
           <div ref={resumeRef}>
-            <TemplateComponent resumeData={resumeData} />
+            <div className="a4-page">
+              <TemplateComponent resumeData={resumeData} />
+            </div>
           </div>
         </div>
       </div>
