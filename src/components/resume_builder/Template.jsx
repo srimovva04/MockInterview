@@ -1,4 +1,5 @@
 import React from 'react';
+
 export const ClassicTemplate = ({ resumeData }) => {
   return (
     <div className="bg-white text-black p-4 rounded-lg text-sm font-serif leading-tight max-w-full mx-auto"
