@@ -22,7 +22,6 @@ const ATSScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [errors, setErrors] = useState({});
 
- 
   const [showDocCenterModal, setShowDocCenterModal] = useState({ for: null }); // "resume" only here
   const [docFiles, setDocFiles] = useState([]);
   const [docCenterLoading, setDocCenterLoading] = useState(false);
@@ -30,10 +29,8 @@ const ATSScanner = () => {
   const resumeInputRef = useRef(null);
   const jobDescInputRef = useRef(null);
 
-
   const { session } = UserAuth();
   const userId = session?.user?.id;
-
 
   const validateFile = (file, maxSize = 5 * 1024 * 1024) => {
     if (!file) return "File is required";
@@ -74,13 +71,15 @@ const ATSScanner = () => {
       setShowDocCenterModal({ for: which });
       setDocCenterLoading(true);
       if (userId) {
-        supabase
-          .storage
+        supabase.storage
           .from("resumes")
           .list(`${userId}/`)
           .then(({ data, error }) => {
-            setDocFiles(data?.filter(f => f.name && !f.name.endsWith("/")) || []);
-          }).finally(() => setDocCenterLoading(false));
+            setDocFiles(
+              data?.filter((f) => f.name && !f.name.endsWith("/")) || []
+            );
+          })
+          .finally(() => setDocCenterLoading(false));
       } else {
         setDocFiles([]);
         setDocCenterLoading(false);
@@ -99,7 +98,7 @@ const ATSScanner = () => {
       const blob = await res.blob();
       const fileObj = new File([blob], fileName, { type: "application/pdf" });
       setResumeFile(fileObj);
-      setErrors(prev => ({ ...prev, resume: null }));
+      setErrors((prev) => ({ ...prev, resume: null }));
     }
     setShowDocCenterModal({ for: null });
     setDocCenterLoading(false);
@@ -123,17 +122,40 @@ const ATSScanner = () => {
       formData.append("file", resumeFile);
       formData.append(
         "job_description",
-        inputMethod === "text"
-          ? jobDescText
-          : "JD from file not implemented"
+        inputMethod === "text" ? jobDescText : "JD from file not implemented"
       );
+
+      // ✅ Get Supabase JWT token from the session (via AuthContext)
+      const token = session?.access_token;
+      if (!token) {
+        alert("You must be logged in to scan.");
+        setIsScanning(false);
+        return;
+      }
 
       const response = await fetch(`${BASE_URL}/upload_resume`, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Include the token
+          // Note: No 'Content-Type' here when using FormData
+        },
         body: formData,
       });
 
+
+
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Scan failed:", errorText);
+        alert("Scan failed: " + errorText);
+        return;
+      }
+
+
+
       const result = await response.json();
+      console.log("Scan result:", result);
       navigate("/results", { state: result });
     } catch (error) {
       console.error("Scan failed:", error);
@@ -151,7 +173,7 @@ const ATSScanner = () => {
     inputRef,
     error,
     description = "Upload PDF file (Max 5MB)",
-    which, 
+    which,
     disableDocCenter = false,
   }) => (
     <div className="relative">
@@ -191,10 +213,14 @@ const ATSScanner = () => {
             )}
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              {title}
+            </h3>
             {file ? (
               <div className="space-y-2">
-                <p className="text-sm text-green-600 font-medium">{file.name}</p>
+                <p className="text-sm text-green-600 font-medium">
+                  {file.name}
+                </p>
                 <p className="text-xs text-gray-500">
                   {(file.size / 1024 / 1024).toFixed(2)} MB
                 </p>
@@ -224,7 +250,6 @@ const ATSScanner = () => {
     </div>
   );
 
-  
   const DocumentCenterPopover = () =>
     showDocCenterModal.for === "resume" ? (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
@@ -236,7 +261,9 @@ const ATSScanner = () => {
           >
             <X className="h-6 w-6" />
           </button>
-          <h3 className="text-lg font-bold mb-3 text-gray-800">Upload Resume</h3>
+          <h3 className="text-lg font-bold mb-3 text-gray-800">
+            Upload Resume
+          </h3>
           <div className="grid gap-3">
             <button
               onClick={() => {
@@ -275,7 +302,7 @@ const ATSScanner = () => {
                     </span>
                     {file.metadata?.size !== undefined && (
                       <span className="text-xs text-slate-500 ml-2">
-                        {(Math.round(file.metadata.size / 1024) || 1)} KB
+                        {Math.round(file.metadata.size / 1024) || 1} KB
                       </span>
                     )}
                   </li>
@@ -361,7 +388,9 @@ const ATSScanner = () => {
                         }}
                         placeholder="Paste the job description here..."
                         className={`w-full h-48 p-4 border-2 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          errors.jobDescText ? "border-red-400" : "border-gray-300"
+                          errors.jobDescText
+                            ? "border-red-400"
+                            : "border-gray-300"
                         }`}
                       />
                       {errors.jobDescText && (

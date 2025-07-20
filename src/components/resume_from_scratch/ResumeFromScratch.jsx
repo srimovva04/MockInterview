@@ -63,6 +63,7 @@ const ResumeForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem("supabase_jwt");
 
     // Phone validation
     if (!/^\d{10}$/.test(formData.personal.phone)) {
@@ -85,7 +86,16 @@ const ResumeForm = () => {
       const res = await axios.post(
         "http://localhost:5000/compile",
         { ...formData, resumeType },
-        { responseType: "blob" } //blob = Binary Large Object (used for files).
+        {
+          responseType: "blob",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Replace with your actual secret key
+          },
+        }
+        // "http://localhost:5000/compile",
+        // { ...formData, resumeType },
+        // { responseType: "blob" } //blob = Binary Large Object (used for files).
       );
 
       clearInterval(interval);

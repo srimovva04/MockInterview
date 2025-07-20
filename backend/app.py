@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,send_file
+from flask import Flask, request, jsonify,send_file,make_response
 import os
 from resume_parser import extract_text_from_pdf
 from match_gemini import match_skills
@@ -9,7 +9,9 @@ from utils import generate_latex, compile_latex_to_pdf
 import io
 from flask import make_response
 from gemini_resume_builder_helper import refine_all_bullets
-# from utils import apply_local_spellcheck  # or spellcheck_utils if placed separately
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from auth_utils import jwt_required
 
 
 app = Flask(__name__)
@@ -28,6 +30,13 @@ app.config.update(
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
+
+
+
+limiter = Limiter(key_func=get_remote_address)
+limiter.init_app(app)
+
 ALLOWED_EXTENSIONS = {'pdf'}
 
 def allowed_file(filename):
@@ -37,49 +46,56 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/upload_resume', methods=['POST'])
+@limiter.limit("5 per minute")  # Rate limiting
+@jwt_required                  # Token check
 def upload_resume():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file uploaded'}), 400
+    print("UPLOAD RESUME HIT")
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file uploaded'}), 400
 
-    file = request.files['file']
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Only PDF files are allowed'}), 400
-    job_description = request.form.get('job_description', 'Software Developer')
+        file = request.files['file']
+        if not allowed_file(file.filename):
+            return jsonify({'error': 'Only PDF files are allowed'}), 400
 
-    filename = secure_filename(file.filename)  # ✅ this sanitizes the name
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
-    file.save(filepath)
+        job_description = request.form.get('job_description', 'Software Developer')
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
 
-    resume_text = extract_text_from_pdf(filepath)
-    # If no job description is passed from frontend, use a default for now
-    if not job_description:
-        job_description = "Looking for a frontend developer skilled in React, JavaScript, and UI/UX design."
-    score, matched_skills = match_skills(resume_text, job_description)
+        resume_text = extract_text_from_pdf(filepath)
+        if not job_description:
+            job_description = "Frontend dev with React and JS"
 
-    return jsonify({
-        # 'resume_text': resume_text,
-        'score': score,
-        'matched_skills': matched_skills
-    })
+        score, matched_skills = match_skills(resume_text, job_description)
+
+        return jsonify({
+            'score': score,
+            'matched_skills': matched_skills
+        })
+
+    except Exception as e:
+        app.logger.error(f"[UPLOAD ERROR]: {str(e)}")
+        return {"error": "Something went wrong while uploading the resume."}, 500
+    
+
 
 
 @app.route("/compile", methods=["POST"])
+@jwt_required
+@limiter.limit("3 per minute")
 def compile_resume():
     try:
         data = request.json
 
-        # ✅ Limit project and education count
+        # Limit project and education count
         if data.get("resumeType") == "one":
             data['projects'] = data['projects'][:4]
             data['education'] = data['education'][:2]
 
-        # ✅ Apply local spell check (offline, fast)
-        # data = apply_local_spellcheck(data)
 
         data = refine_all_bullets(data)
-        
         latex = generate_latex(data)
-
         pdf = compile_latex_to_pdf(latex)
         print("[DEBUG] Compiled PDF:", "Success" if pdf else "Failed")
 

@@ -4,3 +4,6 @@ PyPDF2
 google-generativeai
 python-dotenv
 textblob
+flask-limiter
+PyJWT
+Werkzeug
