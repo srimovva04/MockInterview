@@ -1,20 +1,35 @@
 import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from flask import request
 from functools import wraps
 import os
 
-
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
-
 
 def verify_token(token):
     try:
-        decoded = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"])
+        decoded = jwt.decode(
+            token,
+            SUPABASE_JWT_SECRET,
+            algorithms=["HS256"],
+            audience="authenticated"  # This must match the 'aud' claim in your JWT!
+        )
         return decoded
     except jwt.ExpiredSignatureError:
+        print("JWT expired")
         return None
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
+        print(f"Invalid token: {e}")
         return None
+
+# def verify_token(token):
+#     try:
+#         decoded = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"])
+#         return decoded
+#     except jwt.ExpiredSignatureError:
+#         return None
+#     except jwt.InvalidTokenError:
+#         return None
 
 def jwt_required(f):
     @wraps(f)

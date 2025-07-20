@@ -32,18 +32,16 @@ app.post("/generate-pdf", async (req, res) => {
           }
           margin-bottom: 0 !important; /* Reduced bottom margin */
 
-          .resume-wrapper {
-           width: 100%;
-           margin: 0;
-           padding: 0;
+         .resume-wrapper > div:first-child {
+            position: static !important; 
+            margin-top: 0 !important;
           }
 
           h1 {
             font-size: 1.5rem;
             font-weight: 900;
             text-transform: uppercase;
-            margin-top: 0.2rem; /* Add this */
-            margin-bottom: 0.5rem; /* Optional: reduce bottom spacing too */
+            margin-top: 0.2rem; 
           }
 
           h3 {
@@ -65,6 +63,12 @@ app.post("/generate-pdf", async (req, res) => {
             padding-left: 1.25rem;
             margin-top: 0.25rem;
           }
+
+          .section-container {
+            break-inside: avoid;
+            margin-top: 1.5rem; 
+          }
+
         </style>
       </head>
       <body>
@@ -88,14 +92,13 @@ app.post("/generate-pdf", async (req, res) => {
 
     // Set PDF size to A4 (8.27in x 11.69in)
     const pdfBuffer = await page.pdf({
-      format: "A4", // Ensures exact A4 dimensions: 8.27in × 11.69in
-  printBackground: true,
-  margin: {
-    top: "0.2in",
-    bottom: "0.2in",
-    left: "0.25in",     // Adds space on the left
-    right: "0.25in",    // Adds space on the right
-  },
+      printBackground: true,
+      format: "A4",
+      margin: {
+       top: "0.5cm", // Or '2cm', '25mm', etc.
+     },
+      // width: "8.27in",
+      // height: "11.69in",
     });
 
     await browser.close();
