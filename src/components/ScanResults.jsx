@@ -6,7 +6,9 @@ const ScanResults = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  if (!state || !state.score || !state.matched_skills) {
+  // if (!state || !state.score || !state.matched_skills) {
+  if (!state || !state.scan || state.scan.score == null || state.scan.matched_skills == null) {
+
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-center">
         <p className="text-xl text-red-600 font-semibold mb-4">
@@ -22,7 +24,9 @@ const ScanResults = () => {
     );
   }
 
-  const { score, matched_skills } = state;
+  // const { score, matched_skills } = state;
+  const { score, matched_skills } = state.scan;
+
 
   return (
     <div className="max-w-3xl mx-auto p-8 mt-12 bg-white shadow-lg rounded-xl">
@@ -54,7 +58,7 @@ const ScanResults = () => {
 
         <div className="mt-10">
           <button
-            onClick={() => navigate("/ats-scanner")}
+            onClick={() => navigate("/ats-checker")}
             className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
             🔁 Scan Another Resume
