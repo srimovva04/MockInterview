@@ -60,12 +60,21 @@ import LandingPage from "./components/resume_builder/LandingPage";
 import ResumeBuilder from "./components/resume_builder/ResumeBuilder";
 import DocumentCenter from "./components/document_center/DocumentCenter";
 
+
+function RootRedirect() {
+  const { session, loading } = UserAuth();
+  if (loading) return <div>Loading...</div>;
+  return session ? <Navigate to="/home" replace /> : <Navigate to="/signup" replace />;
+}
+
 function App() {
   const { session } = UserAuth();
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/signup" replace />} />
+      {/* <Route path="/" element={<Navigate to="/signup" replace />} /> */}
+
+      <Route path="/" element={<RootRedirect />} />
       <Route path="/signin" element={<Signin />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/update-password" element={<UpdatePassword />} />

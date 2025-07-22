@@ -372,9 +372,6 @@ const Signin = () => {
 
 
 
-
-
-
         // ✅ Get session token (JWT)
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
